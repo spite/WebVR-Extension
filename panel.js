@@ -92,6 +92,7 @@ control.addEventListener( 'change', invalidate );
 control.attach( hmd );
 control.setSize( .5 );
 control.setMode( "translate" );
+control.setSpace( "local" );
 scene.add( control );
 
 function onWindowResize() {

@@ -1,5 +1,16 @@
 var display = null;
 
+var positionSpans = [];
+positionSpans[ 0 ] = document.getElementById( 'position-x' );
+positionSpans[ 1 ] = document.getElementById( 'position-y' );
+positionSpans[ 2 ] = document.getElementById( 'position-z' );
+
+var orientationSpans = [];
+orientationSpans[ 0 ] = document.getElementById( 'orientation-x' );
+orientationSpans[ 1 ] = document.getElementById( 'orientation-y' );
+orientationSpans[ 2 ] = document.getElementById( 'orientation-z' );
+orientationSpans[ 3 ] = document.getElementById( 'orientation-w' );
+
 var container = document.getElementById( 'canvas-container' );
 
 var renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
@@ -18,10 +29,10 @@ chaperoneTexture.wrapS = chaperoneTexture.wrapT = THREE.RepeatWrapping;
 var roomGeometry = new THREE.BoxGeometry( 5, 2, 3 );
 
 var size = .4;
-var w = 5, d = 3, h = 2;
-var sw = 2 * w;//Math.round( Math.round( w / size ) * size );
-var sd = 2 * d;//Math.round( Math.round( d / size ) * size );
-var sh = 2 * h;//Math.round( Math.round( h / size ) * size );
+var w = 5.2, d = 3.1, h = 2;
+var sw = Math.round( 2 * w );
+var sd = Math.round( 2 * d );
+var sh = Math.round( 2 * h );
 roomGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = sh;
 roomGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = sh;
 roomGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].x = sd;
@@ -80,6 +91,7 @@ var control = new THREE.TransformControls( camera, renderer.domElement );
 control.addEventListener( 'change', invalidate );
 control.attach( hmd );
 control.setSize( .5 );
+control.setMode( "translate" );
 scene.add( control );
 
 function onWindowResize() {
@@ -123,6 +135,15 @@ function render() {
 
     if( invalidated ) {
 
+        positionSpans[ 0 ].textContent = hmd.position.x.toFixed( 2 );
+        positionSpans[ 1 ].textContent = hmd.position.y.toFixed( 2 );
+        positionSpans[ 2 ].textContent = hmd.position.z.toFixed( 2 );
+        
+        orientationSpans[ 0 ].textContent = hmd.quaternion.x.toFixed( 2 );
+        orientationSpans[ 1 ].textContent = hmd.quaternion.y.toFixed( 2 );
+        orientationSpans[ 2 ].textContent = hmd.quaternion.z.toFixed( 2 );
+        orientationSpans[ 2 ].textContent = hmd.quaternion.w.toFixed( 2 );
+        
         var str = 'window.__extHMDPosition = [' + 
             hmd.position.x + ', ' +
             hmd.position.y + ', ' +
@@ -152,7 +173,7 @@ window.addEventListener( 'keydown', function ( event ) {
         break;
 
         case 17: // Ctrl
-        control.setTranslationSnap( 100 );
+        control.setTranslationSnap( 1 );
         control.setRotationSnap( THREE.Math.degToRad( 15 ) );
         break;
 
@@ -164,18 +185,18 @@ window.addEventListener( 'keydown', function ( event ) {
         control.setMode( "rotate" );
         break;
 
-        case 82: // R
+        /*case 82: // R
         control.setMode( "scale" );
-        break;
+        break;*/
 
         case 187:
         case 107: // +, =, num+
-        control.setSize( control.size + 0.1 );
+        control.setSize( control.size + 0.01 );
         break;
 
         case 189:
         case 109: // -, _, num-
-        control.setSize( Math.max( control.size - 0.1, 0.1 ) );
+        control.setSize( Math.max( control.size - 0.01, 0.01 ) );
         break;
 
     }

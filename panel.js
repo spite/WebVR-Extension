@@ -90,7 +90,6 @@ controls.target.set( 0, 0, 0 );
 var control = new THREE.TransformControls( camera, renderer.domElement );
 control.addEventListener( 'change', invalidate );
 control.attach( hmd );
-control.setSize( .5 );
 control.setMode( "translate" );
 scene.add( control );
 
@@ -155,6 +154,8 @@ function render() {
             hmd.quaternion.w + '];';
             
         chrome.devtools.inspectedWindow.eval( str );
+
+        control.scale.setScalar( 1.5 / camera.zoom );
 
         renderer.render( scene, camera );
         invalidated = false;

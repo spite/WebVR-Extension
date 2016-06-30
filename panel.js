@@ -91,6 +91,7 @@ var control = new THREE.TransformControls( camera, renderer.domElement );
 control.addEventListener( 'change', invalidate );
 control.attach( hmd );
 control.setMode( "translate" );
+control.setSpace( "local" );
 scene.add( control );
 
 function onWindowResize() {

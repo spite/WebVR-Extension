@@ -4,6 +4,9 @@ var source = '(' + function () {
 
 	'use strict';
 
+	var startDate = Date.now();
+	var startPerfNow = performance.now();
+
 	function VRDisplayCapabilities () {
 
 		this.canPresent = true;
@@ -16,30 +19,39 @@ var source = '(' + function () {
 
 	function VRStageParameters() {
 
-		this.sittingToStandingTransform = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ];
-		this.sizeX = 10;
-		this.sizeZ = 10;
+		this.sittingToStandingTransform = new Float32Array( [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ] );
+		this.sizeX = 0;
+		this.sizeZ = 0;
 
 	}
 
 	function VRPose() {
 
-		this.timestamp = null;
-		this.position = [ 0, 0, 0 ];
-		this.linearVelocity = 0;
-		this.linearAcceleration = 0;
-		this.orientation = [ 0, 0, 0, 0 ];
-		this.angularVelocity = 0;
-		this.angularAcceleration = 0;
+		this.timestamp = startDate + ( performance.now() - startPerfNow );
+		this.position = new Float32Array( [ 0, 0, 0 ] );
+		this.linearVelocity = new Float32Array( [ 0, 0, 0 ] );
+		this.linearAcceleration = null;
+		this.orientation = new Float32Array( [ 0, 0, 0, 0 ] );
+		this.angularVelocity = new Float32Array( [ 0, 0, 0 ] );
+		this.angularAcceleration = null;
+
+	}
+
+	function VRFieldOfView() {
+
+		this.upDegrees = 55.814;
+		this.downDegrees = 55.728;
+		this.leftDegrees = 54.429;
+		this.rightDegrees = 51.288;
 
 	}
 
 	function VREyeParameters() {
 
-		this.offset = 0;
-		this.fieldOfView = 90;
-		this.renderWidth = 512;
-		this.renderHeight = 512;
+		this.offset = new Float32Array( [ 0.032, 0, 0 ] );
+		this.fieldOfView = new VRFieldOfView();
+		this.renderWidth = 1512;
+		this.renderHeight = 1680;
 
 	}
 
@@ -47,8 +59,8 @@ var source = '(' + function () {
 
 		this.depthFar = 1000;
 		this.depthNear = .1;
-		this.displayId = 1337;
-		this.displayName = 'Emulated Vive';
+		this.displayId = 1;
+		this.displayName = 'Emulated HTC Vive DVT';
 		this.isConnected = true;
 		this.isPresenting = false;
 		
@@ -57,6 +69,16 @@ var source = '(' + function () {
 		this.capabilities = new VRDisplayCapabilities();
 
 		this.pose = new VRPose();
+
+		this.leftEyeParameters = new VREyeParameters();
+		this.leftEyeParameters.offset[ 0 ] *= -1;
+
+		this.rightEyeParameters = new VREyeParameters();
+		this.rightEyeParameters.fieldOfView.upDegrees = 55.687;
+		this.rightEyeParameters.fieldOfView.downDegrees = 55.658;
+		this.rightEyeParameters.fieldOfView.leftDegrees = 51.110;
+		this.rightEyeParameters.fieldOfView.rightDegrees = 54.397;
+		
 		window.__extHMDResetPose = true;
 
 	}
@@ -69,17 +91,27 @@ var source = '(' + function () {
 
 	VRDisplay.prototype.getEyeParameters = function( id ) {
 
-		var p = new VREyeParameters();
-		p.offset = -256;
-		if( id === 'right' ) p.offset = 256;
-		return p;
+		if( id === 'left' ) return this.leftEyeParameters;
+		return this.rightEyeParameters;
 		
 	}
 
 	VRDisplay.prototype.getPose = function() {
 
-		if( window.__extHMDPosition ) this.pose.position = __extHMDPosition;
-		if( window.__extHMDOrientation ) this.pose.orientation = __extHMDOrientation;
+		if( window.__extHMDPosition ) {
+			
+			this.pose.linearVelocity[ 0 ] = window.__extHMDPosition[ 0 ] - this.pose.position[ 0 ];
+			this.pose.linearVelocity[ 1 ] = window.__extHMDPosition[ 1 ] - this.pose.position[ 1 ];
+			this.pose.linearVelocity[ 2 ] = window.__extHMDPosition[ 2 ] - this.pose.position[ 2 ];
+			
+			this.pose.position[ 0 ] = window.__extHMDPosition[ 0 ];
+			this.pose.position[ 1 ] = window.__extHMDPosition[ 1 ];
+			this.pose.position[ 2 ] = window.__extHMDPosition[ 2 ];
+		}
+
+		if( window.__extHMDOrientation ) this.pose.orientation = new Float32Array( __extHMDOrientation );
+
+		this.pose.timestamp = startDate + ( performance.now() - startPerfNow );
 
 		return this.pose;
 
@@ -101,8 +133,8 @@ var source = '(' + function () {
 
 	VRDisplay.prototype.resetPose = function() {
 
-		window.__extHMDPosition = [ 0, 0, 0 ]
-		window.__extHMDOrientation = [ 0, 0, 0, 0 ]
+		window.__extHMDPosition = new Float32Array( [ 0, 0, 0 ] );
+		window.__extHMDOrientation = new Float32Array( [ 0, 0, 0, 0 ] );
 		window.__extHMDResetPose = true;
 
 	}

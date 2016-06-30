@@ -7,13 +7,60 @@ renderer.setPixelRatio( window.devicePixelRatio );
 container.appendChild( renderer.domElement );
 
 var scene = new THREE.Scene();
-//var camera = new THREE.PerspectiveCamera( 75, 1, .01, 100 );
-//camera.position.set( 1, 1, 1 );
 var camera = new THREE.OrthographicCamera( 1 / - 2, 1 / 2, 1 / 2, 1 / - 2, - 5, 10 );
-camera.position.set( 2, 2, 2 );
+camera.position.set( -2, 2, 2 );
 camera.lookAt( scene.position );
 
-var room = new THREE.Mesh( new THREE.BoxGeometry( 5, 2, 3 ), new THREE.MeshNormalMaterial( { side: THREE.BackSide }) );
+var textureLoader = new THREE.TextureLoader();
+var chaperoneTexture = textureLoader.load( 'assets/chaperone-texture.png', invalidate );
+chaperoneTexture.wrapS = chaperoneTexture.wrapT = THREE.RepeatWrapping;
+
+var roomGeometry = new THREE.BoxGeometry( 5, 2, 3 );
+
+var size = .4;
+var w = 5, d = 3, h = 2;
+var sw = 2 * w;//Math.round( Math.round( w / size ) * size );
+var sd = 2 * d;//Math.round( Math.round( d / size ) * size );
+var sh = 2 * h;//Math.round( Math.round( h / size ) * size );
+roomGeometry.faceVertexUvs[ 0 ][ 0 ][ 0 ].y = sh;
+roomGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].y = sh;
+roomGeometry.faceVertexUvs[ 0 ][ 0 ][ 2 ].x = sd;
+
+roomGeometry.faceVertexUvs[ 0 ][ 1 ][ 1 ].x = sd;
+roomGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].x = sd;
+roomGeometry.faceVertexUvs[ 0 ][ 1 ][ 2 ].y = sh;
+
+roomGeometry.faceVertexUvs[ 0 ][ 2 ][ 0 ].y = sh;
+roomGeometry.faceVertexUvs[ 0 ][ 2 ][ 2 ].y = sh;
+roomGeometry.faceVertexUvs[ 0 ][ 2 ][ 2 ].x = sd;
+
+roomGeometry.faceVertexUvs[ 0 ][ 3 ][ 1 ].x = sd;
+roomGeometry.faceVertexUvs[ 0 ][ 3 ][ 2 ].x = sd;
+roomGeometry.faceVertexUvs[ 0 ][ 3 ][ 2 ].y = sh;
+
+roomGeometry.faceVertexUvs[ 0 ][ 8 ][ 0 ].y = sh;
+roomGeometry.faceVertexUvs[ 0 ][ 8 ][ 2 ].y = sh;
+roomGeometry.faceVertexUvs[ 0 ][ 8 ][ 2 ].x = sw;
+
+roomGeometry.faceVertexUvs[ 0 ][ 9 ][ 1 ].x = sw;
+roomGeometry.faceVertexUvs[ 0 ][ 9 ][ 2 ].x = sw;
+roomGeometry.faceVertexUvs[ 0 ][ 9 ][ 2 ].y = sh;
+
+roomGeometry.faceVertexUvs[ 0 ][ 10 ][ 0 ].y = sh;
+roomGeometry.faceVertexUvs[ 0 ][ 10 ][ 2 ].y = sh;
+roomGeometry.faceVertexUvs[ 0 ][ 10 ][ 2 ].x = sw;
+
+roomGeometry.faceVertexUvs[ 0 ][ 11 ][ 1 ].x = sw;
+roomGeometry.faceVertexUvs[ 0 ][ 11 ][ 2 ].x = sw;
+roomGeometry.faceVertexUvs[ 0 ][ 11 ][ 2 ].y = sh;
+
+roomGeometry.uvsNeedUpdate = true;
+
+var room = new THREE.Mesh( roomGeometry, new THREE.MeshBasicMaterial( { 
+    map: chaperoneTexture, 
+    side: THREE.BackSide,
+    transparent: true
+} ) );
 room.position.y = 1;
 scene.add( room );
 
@@ -42,8 +89,9 @@ function onWindowResize() {
 
     renderer.setSize( w, h );
 
-    //camera.aspect = w / h;
-    //camera.updateProjectionMatrix();
+    var a = w / h;
+    w = 7;
+    h = w / a;
 
     camera.left = w / - 2;
     camera.right = w / 2;

@@ -2,26 +2,53 @@
 <head>
 <style>
 *{ box-sizing: border-box; margin: 0; padding: 0; font-size: 12px;}
-body{ background-color: #eee; -webkit-user-select: none; cursor: default; }
-#canvas-container{ width: 100%; height: 50%; }
+body{ background-color: #eee; -webkit-user-select: none; cursor: default; overflow: hidden;}
+.layout{ display: flex; flex-direction: column; height: 100%; }
+.layout > div{ flex: 1 0 auto; }
+#csanvas-container{ flex: 0 1 auto }
+.warning{ text-align: center; padding: 10px; background-color: #fecc34; color: #d70404; text-shadow: 0 1px 0 #ffffff;}
+.warning p{ padding: 5px 20px 5px 20px; }
+.block{ padding: 10px; }
+.var-name{ width: 80px; display: inline-block;}
 </style>
 </head>
 <body>
 <script src="three.min.js"></script>
 <script src="OrbitControls.js"></script>
 <script src="TransformControls.js"></script>
-<p>Headset
-<select>
-	<option>Vive</option>
-</select>
-</p>
-<div id="canvas-container">
+<div class="layout">
+
+	<div class="warning">
+		<p>Warning: this extension completely polyfills the WebVR API. If you have a working WebVR implementation, it will be replaced!</p>
+		<p>This is a work in progress in a very early stage, can't be turned off except by disabling or removing the extension</p>
+	</div>
+
+	<div class="block">
+		<p>Headset
+		<select>
+			<option>Vive</option>
+		</select>
+		</p>
+	</div>
+
+	<div id="canvas-container"></div>
+
+	<div id="bottom-panel">
+		<div class="block">
+			<p>Left-click and drag on screen to rotate - Right-click to pan - Mousewheel to zoom</p>
+			<p><b>W</b> Translate - <b>E</b> Rotate - <b>Ctrl</b> Snap to 1m</p>
+		</div>
+		<div class="block">
+			<p><span class="var-name" >Position</span> <span id="position-x" >0</span> <span id="position-y" >0</span> <span id="position-z" >0</span></p>
+			<p><span class="var-name" >Orientation</span> <span id="orientation-x" >0</span> <span id="orientation-y" >0</span> <span id="orientation-z" >0</span> <span id="orientation-w" >0</span></p>
+		</div>
+		<div class="block">
+			<p>Stored positions (coming soon)</p>
+		</div>
+	</div>
+
 </div>
-<div>
-	<p><b>W</b> Translate - <b>E</b> Rotate - <b>Ctrl</b> Snap to 1m</p>
-</div>
-<p>Position <span id="position-x" >0</span> <span id="position-y" >0</span> <span id="position-z" >0</span></p>
-<p>Orientation <span id="orientation-x" >0</span> <span id="orientation-y" >0</span> <span id="orientation-z" >0</span> <span id="orientation-w" >0</span></p>
+
 </body>
 <script src="panel.js"></script>
 </html>

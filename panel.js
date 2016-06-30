@@ -73,6 +73,7 @@ var room = new THREE.Mesh( roomGeometry, new THREE.MeshBasicMaterial( {
     transparent: true
 } ) );
 room.position.y = 1;
+room.renderOrder = -1;
 scene.add( room );
 
 var hmd = new THREE.Mesh( new THREE.BoxGeometry( .20, .11, .12 ), new THREE.MeshNormalMaterial() );

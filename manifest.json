@@ -1,0 +1,30 @@
+{
+	"name": "1dev WebVR",
+	"version": "1.0.0",
+	"minimum_chrome_version": "10.0",
+	"devtools_page": "devtools.html",
+	"description": "WebVR.",
+	"background": {
+		"scripts": [
+			"background.js"
+		]
+	},
+	"permissions": [
+		"tabs","<all_urls>"
+	],
+	"content_scripts": [{
+		"matches": ["<all_urls>"],
+		"js": [ "polyfill.js" ],
+		"run_at": "document_start",
+		"all_frames": true
+	} ],
+	"browser_action": {
+		"default_icon": {
+		},
+		"default_title": "WebVR"
+	},
+	"manifest_version": 2,
+	"web_accessible_resources": [
+		"polyfill.js"
+	]
+}

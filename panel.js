@@ -19,7 +19,7 @@ container.appendChild( renderer.domElement );
 
 var scene = new THREE.Scene();
 var camera = new THREE.OrthographicCamera( 1 / - 2, 1 / 2, 1 / 2, 1 / - 2, - 5, 10 );
-camera.position.set( -2, 2, 2 );
+camera.position.set( 2, 2, 2 );
 camera.lookAt( scene.position );
 
 var textureLoader = new THREE.TextureLoader();

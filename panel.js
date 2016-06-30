@@ -20,12 +20,17 @@ scene.add( room );
 var hmd = new THREE.Mesh( new THREE.BoxGeometry( .20, .11, .12 ), new THREE.MeshNormalMaterial() );
 scene.add( hmd );
 
+var invalidated = true;
+function invalidate() {
+    invalidated = true;
+}
+
 var controls = new THREE.OrbitControls( camera, container );
-controls.addEventListener( 'change', render );
+controls.addEventListener( 'change', invalidate );
 controls.target.set( 0, 0, 0 ); 
 
 var control = new THREE.TransformControls( camera, renderer.domElement );
-control.addEventListener( 'change', render );
+control.addEventListener( 'change', invalidate );
 control.attach( hmd );
 control.setSize( .5 );
 scene.add( control );
@@ -47,7 +52,7 @@ function onWindowResize() {
 
     camera.updateProjectionMatrix();
 
-    render();
+    invalidate();
 
 }
 
@@ -58,29 +63,35 @@ function render() {
     var str = 'window.__extHMDResetPose';
     chrome.devtools.inspectedWindow.eval( str, function(result, isException) { 
         if( result === true ) {
+            invalidate();
             hmd.position.set( 0, 0,0 );
             hmd.quaternion.set( 0, 0, 0, 0 );
+            control.detach( hmd );
+            control.attach( hmd );
             var str = 'window.__extHMDResetPose = false;';
             chrome.devtools.inspectedWindow.eval( str );
         }
     } );
-        
-    control.update();
 
-    var str = 'window.__extHMDPosition = [' + 
-        hmd.position.x + ', ' +
-        hmd.position.y + ', ' +
-        hmd.position.z + '];';
-    str += 'window.__extHMDOrientation = [' +
-        hmd.quaternion.x + ', ' +
-        hmd.quaternion.y + ', ' +
-        hmd.quaternion.z + ', ' +
-        hmd.quaternion.w + '];';
-        
-    chrome.devtools.inspectedWindow.eval( str, function(result, isException) { } );
+    if( invalidated ) {
 
-    renderer.render( scene, camera );
-   // requestAnimationFrame( render );
+        var str = 'window.__extHMDPosition = [' + 
+            hmd.position.x + ', ' +
+            hmd.position.y + ', ' +
+            hmd.position.z + '];';
+        str += 'window.__extHMDOrientation = [' +
+            hmd.quaternion.x + ', ' +
+            hmd.quaternion.y + ', ' +
+            hmd.quaternion.z + ', ' +
+            hmd.quaternion.w + '];';
+            
+        chrome.devtools.inspectedWindow.eval( str );
+
+        renderer.render( scene, camera );
+        invalidated = false;
+    }
+
+    requestAnimationFrame( render );
 
 }
 
@@ -123,7 +134,5 @@ window.addEventListener( 'keydown', function ( event ) {
 
 });
 
-
 onWindowResize();
 render();
-

@@ -797,7 +797,7 @@
 
 			scale = worldPosition.distanceTo( camPosition ) / 6 * scope.size;
 			this.position.copy( worldPosition );
-			this.scale.set( scale, scale, scale );
+			// this.scale.set( scale, scale, scale );
 
 			eye.copy( camPosition ).sub( worldPosition ).normalize();
 

@@ -20,8 +20,8 @@ var source = '(' + function () {
 	function VRStageParameters() {
 
 		this.sittingToStandingTransform = new Float32Array( [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ] );
-		this.sizeX = 0;
-		this.sizeZ = 0;
+		this.sizeX = 5;
+		this.sizeZ = 3;
 
 	}
 

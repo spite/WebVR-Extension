@@ -6,6 +6,7 @@ https://github.com/spite/WebVR-Extension
 ## [Unreleased]
 ### Fixed
 - Drawing order by @mrdoob.
+- Camera position by @mrdoob.
 
 ### Added
 - Changes to TransformControls by @mrdoob.

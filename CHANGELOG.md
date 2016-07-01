@@ -4,12 +4,17 @@ For "Chrome DevTools extension to emulate WebVR API"
 https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
+
+## [1.0.0] - 2016-07-1
 ### Fixed
 - Drawing order by @mrdoob.
+
+### Changed
 - Camera position by @mrdoob.
+- Default StageParameters dimensions by @spite
+- Changes to TransformControls by @mrdoob.
 
 ### Added
-- Changes to TransformControls by @mrdoob.
 - Change log
 
 ## [1.0.0] - 2016-06-30

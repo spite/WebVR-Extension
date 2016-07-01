@@ -4,8 +4,8 @@ It currently emulates an HTC Vive.
 
 [Here's a video showing it in action](https://www.youtube.com/watch?v=oegZrA9tr08)
 
-![Snapshot 1](/assets/snapshot1.jpg)
-![Snapshot 2](/assets/snapshot2.jpg)
+![Snapshot 1](/about/snapshot1.jpg)
+![Snapshot 2](/about/snapshot2.jpg)
 
 [Install the extension from the Chrome Store](https://chrome.google.com/webstore/detail/webvr-api-emulation/gbdnpaebafagioggnhkacnaaahpiefil)
 

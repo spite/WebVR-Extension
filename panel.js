@@ -145,15 +145,17 @@ function render() {
         orientationSpans[ 2 ].textContent = hmd.quaternion.z.toFixed( 2 );
         orientationSpans[ 2 ].textContent = hmd.quaternion.w.toFixed( 2 );
         
-        var str = 'window.__extHMDPosition = [' + 
+        var str = 'function __set( wnd ){' +
+        'wnd.__extHMDPosition = [' + 
             hmd.position.x + ', ' +
             hmd.position.y + ', ' +
-            hmd.position.z + '];';
-        str += 'window.__extHMDOrientation = [' +
+            hmd.position.z + '];' +
+        'wnd.__extHMDOrientation = [' +
             hmd.quaternion.x + ', ' +
             hmd.quaternion.y + ', ' +
             hmd.quaternion.z + ', ' +
-            hmd.quaternion.w + '];';
+            hmd.quaternion.w + '];' +
+        '}; __set( window ); [].forEach.call( window.document.querySelectorAll( \'iframe\' ), function( w ) { __set( w.contentWindow ) } );';
             
         chrome.devtools.inspectedWindow.eval( str );
 

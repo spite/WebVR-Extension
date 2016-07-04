@@ -5,7 +5,7 @@ https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
 
-## [1.0.0] - 2016-07-1
+## [1.0.1] - 2016-07-1
 ### Fixed
 - Drawing order by @mrdoob.
 

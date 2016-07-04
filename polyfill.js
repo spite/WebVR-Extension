@@ -4,6 +4,10 @@ var source = '(' + function () {
 
 	'use strict';
 
+	window.__extHMDPosition = new Float32Array( [ 0, 0, 0 ] );
+	window.__extHMDOrientation = new Float32Array( [ 0, 0, 0, 0 ] );
+	window.__extHMDResetPose = true;
+
 	var startDate = Date.now();
 	var startPerfNow = performance.now();
 
@@ -146,6 +150,133 @@ var source = '(' + function () {
 		return new Promise( function( resolve, reject ) {
 
 			resolve( [ new VRDisplay() ] );
+
+		} );
+
+	}
+
+	// LEGACY 
+
+	function HMDVRDevice() {
+
+		this.deviceName = 'VR HMD';
+
+		this.leftEyeParameters = new VREyeParameters();
+		this.rightEyeParameters = new VREyeParameters();
+		
+		this.leftRecommendedFOV = new VREyeParameters();
+		this.rightRecommendedFOV = new VREyeParameters();
+		
+		window.__extHMDResetPose = true;
+
+	}
+
+	HMDVRDevice.prototype.getEyeTranslation = function( eye ) {
+
+		return 3;
+
+	}
+
+	HMDVRDevice.prototype.getRecommendedEyeFieldOfView = function( eye ) {
+
+		if( eye === 'left' ) return this.leftRecommendedFOV;
+		return this.rightRecommendedFOV;
+
+	}
+
+	function VRFieldOfView() {
+
+		this.upDegrees = 55.814;
+		this.downDegrees = 55.728;
+		this.leftDegrees = 54.429;
+		this.rightDegrees = 51.288;
+
+	}
+
+	function VREyeParameters() {
+
+		this.eyeTranslation = .032;
+		this.recommendedFieldOfView = new VRFieldOfView();
+		this.offset = new Float32Array( [ 0.032, 0, 0 ] );
+		this.fieldOfView = new VRFieldOfView();
+		this.renderWidth = 1512;
+		this.renderHeight = 1680;
+
+	}
+
+	HMDVRDevice.prototype.getEyeParameters = function( eye ) {
+
+		if( eye === 'left' ) return this.leftEyeParameters;
+		return this.rightEyeParameters;
+
+	}
+
+	function PositionSensorVRDevice() {
+
+		this.deviceName = 'VR HMD';
+
+		this.state = new VRPositionState();
+
+	}
+
+	function VRPositionState() {
+
+		this.angularAcceleration = new DOMPoint();
+		this.angularVelocity = new DOMPoint();
+		this.linearAcceleration = new DOMPoint();
+		this.linearVelocity = new DOMPoint();
+		this.orientation = new DOMPoint();
+		this.position = new DOMPoint();
+		this.timestamp = null;
+
+		this.hasPosition = true;
+		this.hasOrientation = true;
+
+	}
+
+	function DOMPoint() {
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
+		this.w = 0;
+	}
+
+	PositionSensorVRDevice.prototype.getState = function() {
+
+		if( window.__extHMDPosition ) {
+			
+			this.state.linearVelocity.x = window.__extHMDPosition[ 0 ] - this.state.position.x;
+			this.state.linearVelocity.y = window.__extHMDPosition[ 1 ] - this.state.position.y;
+			this.state.linearVelocity.z = window.__extHMDPosition[ 2 ] - this.state.position.z;
+			
+			this.state.position.x = window.__extHMDPosition[ 0 ];
+			this.state.position.y = window.__extHMDPosition[ 1 ];
+			this.state.position.z = window.__extHMDPosition[ 2 ];
+		}
+
+		if( window.__extHMDOrientation ) {
+
+			this.state.orientation.x = __extHMDOrientation[ 0 ];
+			this.state.orientation.y = __extHMDOrientation[ 1 ];
+			this.state.orientation.z = __extHMDOrientation[ 2 ];
+			this.state.orientation.w = __extHMDOrientation[ 3 ];
+
+		}
+
+		this.state.timestamp = startDate + ( performance.now() - startPerfNow );
+
+		return this.state;
+
+	}
+
+	window.HMDVRDevice = HMDVRDevice;
+	window.PositionSensorVRDevice = PositionSensorVRDevice;
+
+	navigator.getVRDevices = function() {
+
+		return new Promise( function( resolve, reject ) {
+
+			resolve( [ new HMDVRDevice(), new PositionSensorVRDevice() ] );
 
 		} );
 

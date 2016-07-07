@@ -8,7 +8,7 @@ https://github.com/spite/WebVR-Extension
 ## [1.0.2] - 2016-07-08
 ### Added
 - Support for iframes by @spite
-- Polyfill for legacy API by @spite
+- Initial Polyfill for legacy API by @spite
 
 ## [1.0.1] - 2016-07-1
 ### Fixed

@@ -5,7 +5,11 @@ https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
 ### Added
-- emit event vrdisplaypresentchange by @spite
+- Emit event vrdisplaypresentchange by @spite
+- VRDisplay.exitPresent by @spite
+
+### Changed
+- Removed Float32Array allocation in VRDisplay.getPose by @spite
 
 ### Greetings
 - @edankwan for helping debug issue

@@ -4,6 +4,8 @@ For "Chrome DevTools extension to emulate WebVR API"
 https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
+
+## [1.0.3] - 2016-07-12
 ### Added
 - Emit event vrdisplaypresentchange by @spite
 - VRDisplay.exitPresent by @spite

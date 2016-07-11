@@ -4,6 +4,11 @@ For "Chrome DevTools extension to emulate WebVR API"
 https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
+### Added
+- emit event vrdisplaypresentchange by @spite
+
+### Greetings
+- @edankwan for helping debug issue
 
 ## [1.0.2] - 2016-07-08
 ### Added

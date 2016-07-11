@@ -144,6 +144,22 @@ var source = '(' + function () {
 
 	}
 
+	VRDisplay.prototype.exitPresent = function() {
+
+		return new Promise( function( resolve, reject ) {
+
+			this.isPresenting = false;
+
+			var event = document.createEvent('Event');
+			event.initEvent('vrdisplaypresentchange', false, false);
+			window.dispatchEvent(event);
+
+			resolve();
+
+		}.bind( this ) );
+		
+	}
+
 	VRDisplay.prototype.submitFrame = function( pose ) {
 	}
 

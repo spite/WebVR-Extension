@@ -4,6 +4,30 @@ var source = '(' + function () {
 
 	'use strict';
 
+	var ViveData = {
+		name: 'Emulated HTC Vive DVT',
+		resolution: { width: 1512, height: 1680 },
+		features: { canPresent: true, hasExternalDisplay: true, hasOrientation: true, hasPosition: true },
+		leftEye: { offset: -0.032, up: 41.653, down: 48.008, left: 43.977, right: 35.575 },
+		rightEye: { offset: 0.032, up: 41.653, down: 48.008, left: 35.575, right: 43.977 }	
+	}
+
+	var RiftData = {
+		name: 'Emulated Oculus Rift CV1',
+		resolution: { width: 1332, height: 1586 },
+		features: { canPresent: true, hasExternalDisplay: true, hasOrientation: true, hasPosition: true },
+		leftEye: { offset: -0.032, up: 55.814, down: 55.728, left: 54.429, right: 51.288 },
+		rightEye: { offset: 0.032, up: 55.687, down: 55.658, left: 51.110, right: 54.397 }	
+	}
+
+	var CardboardData = {
+		name: 'Emulated Google, Inc. Cardboard v1',
+		resolution: { width: 960, height: 1080 },
+		features: { canPresent: true, hasExternalDisplay: false, hasOrientation: true, hasPosition: false },
+		leftEye: { offset: -0.030, up: 40, down: 40, left: 40, right: 40 },
+		rightEye: { offset: 0.030, up: 40, down: 40, left: 40, right: 40 }	
+	}
+
 	window.__extHMDPosition = new Float32Array( [ 0, 0, 0 ] );
 	window.__extHMDOrientation = new Float32Array( [ 0, 0, 0, 0 ] );
 	window.__extHMDResetPose = true;
@@ -43,46 +67,59 @@ var source = '(' + function () {
 
 	function VRFieldOfView() {
 
-		this.upDegrees = 55.814;
-		this.downDegrees = 55.728;
-		this.leftDegrees = 54.429;
-		this.rightDegrees = 51.288;
+		this.upDegrees = 0;
+		this.downDegrees = 0;
+		this.leftDegrees = 0;
+		this.rightDegrees = 0;
 
 	}
 
 	function VREyeParameters() {
 
-		this.offset = new Float32Array( [ 0.032, 0, 0 ] );
+		this.offset = new Float32Array( [ 0, 0, 0 ] );
 		this.fieldOfView = new VRFieldOfView();
-		this.renderWidth = 1512;
-		this.renderHeight = 1680;
+		this.renderWidth = 0;
+		this.renderHeight = 0;
 
 	}
 
-	function VRDisplay() {
+	function VRDisplay( model ) {
 
 		this.depthFar = 1000;
 		this.depthNear = .1;
 		this.displayId = 1;
-		this.displayName = 'Emulated HTC Vive DVT';
+		this.displayName = model.name;
 		this.isConnected = true;
 		this.isPresenting = false;
 		
 		this.stageParameters = new VRStageParameters();
 
 		this.capabilities = new VRDisplayCapabilities();
+		this.capabilities.canPresent = model.features.canPresent;
+		this.capabilities.hasExternalDisplay = model.features.hasExternalDisplay;
+		this.capabilities.hasOrientation = model.features.hasOrientation;
+		this.capabilities.hasPosition = model.features.hasPosition;
 
 		this.pose = new VRPose();
 
 		this.leftEyeParameters = new VREyeParameters();
-		this.leftEyeParameters.offset[ 0 ] *= -1;
-
-		this.rightEyeParameters = new VREyeParameters();
-		this.rightEyeParameters.fieldOfView.upDegrees = 55.687;
-		this.rightEyeParameters.fieldOfView.downDegrees = 55.658;
-		this.rightEyeParameters.fieldOfView.leftDegrees = 51.110;
-		this.rightEyeParameters.fieldOfView.rightDegrees = 54.397;
+		this.leftEyeParameters.fieldOfView.upDegrees = model.leftEye.up;
+		this.leftEyeParameters.fieldOfView.downDegrees = model.leftEye.down;
+		this.leftEyeParameters.fieldOfView.leftDegrees = model.leftEye.left;
+		this.leftEyeParameters.fieldOfView.rightDegrees = model.leftEye.right;
+		this.leftEyeParameters.renderWidth = model.resolution.width;
+		this.leftEyeParameters.renderHeight = model.resolution.height;
+		this.leftEyeParameters.offset[ 0 ] = model.leftEye.offset;
 		
+		this.rightEyeParameters = new VREyeParameters();
+		this.rightEyeParameters.fieldOfView.upDegrees = model.rightEye.up;
+		this.rightEyeParameters.fieldOfView.downDegrees = model.rightEye.down;
+		this.rightEyeParameters.fieldOfView.leftDegrees = model.rightEye.left;
+		this.rightEyeParameters.fieldOfView.rightDegrees = model.rightEye.right;
+		this.rightEyeParameters.renderWidth = model.resolution.width;
+		this.rightEyeParameters.renderHeight = model.resolution.height;
+		this.rightEyeParameters.offset[ 0 ] = model.leftEye.offset;
+
 		window.__extHMDResetPose = true;
 
 	}
@@ -157,7 +194,7 @@ var source = '(' + function () {
 			resolve();
 
 		}.bind( this ) );
-		
+
 	}
 
 	VRDisplay.prototype.submitFrame = function( pose ) {
@@ -177,7 +214,7 @@ var source = '(' + function () {
 
 		return new Promise( function( resolve, reject ) {
 
-			resolve( [ new VRDisplay() ] );
+			resolve( [ new VRDisplay( ViveData ) ] );
 
 		} );
 
@@ -185,15 +222,45 @@ var source = '(' + function () {
 
 	// LEGACY 
 
-	function HMDVRDevice() {
+	function HMDVRDevice( model ) {
 
-		this.deviceName = 'VR HMD';
-
-		this.leftEyeParameters = new VREyeParameters();
-		this.rightEyeParameters = new VREyeParameters();
+		this.deviceName = model.name;
 		
+		this.leftEyeParameters = new VREyeParameters();
+		this.leftEyeParameters.fieldOfView.upDegrees = model.leftEye.up;
+		this.leftEyeParameters.fieldOfView.downDegrees = model.leftEye.down;
+		this.leftEyeParameters.fieldOfView.leftDegrees = model.leftEye.left;
+		this.leftEyeParameters.fieldOfView.rightDegrees = model.leftEye.right;
+		this.leftEyeParameters.renderWidth = model.resolution.width;
+		this.leftEyeParameters.renderHeight = model.resolution.height;
+		this.leftEyeParameters.offset[ 0 ] = model.leftEye.offset;
+		
+		this.rightEyeParameters = new VREyeParameters();
+		this.rightEyeParameters.fieldOfView.upDegrees = model.rightEye.up;
+		this.rightEyeParameters.fieldOfView.downDegrees = model.rightEye.down;
+		this.rightEyeParameters.fieldOfView.leftDegrees = model.rightEye.left;
+		this.rightEyeParameters.fieldOfView.rightDegrees = model.rightEye.right;
+		this.rightEyeParameters.renderWidth = model.resolution.width;
+		this.rightEyeParameters.renderHeight = model.resolution.height;
+		this.rightEyeParameters.offset[ 0 ] = model.rightEye.offset;
+
 		this.leftRecommendedFOV = new VREyeParameters();
+		this.leftRecommendedFOV.fieldOfView.upDegrees = model.leftEye.up;
+		this.leftRecommendedFOV.fieldOfView.downDegrees = model.leftEye.down;
+		this.leftRecommendedFOV.fieldOfView.leftDegrees = model.leftEye.left;
+		this.leftRecommendedFOV.fieldOfView.rightDegrees = model.leftEye.right;
+		this.leftRecommendedFOV.renderWidth = model.resolution.width;
+		this.leftRecommendedFOV.renderHeight = model.resolution.height;
+		this.leftRecommendedFOV.offset[ 0 ] = model.leftEye.offset;
+
 		this.rightRecommendedFOV = new VREyeParameters();
+		this.rightRecommendedFOV.fieldOfView.upDegrees = model.rightEye.up;
+		this.rightRecommendedFOV.fieldOfView.downDegrees = model.rightEye.down;
+		this.rightRecommendedFOV.fieldOfView.leftDegrees = model.rightEye.left;
+		this.rightRecommendedFOV.fieldOfView.rightDegrees = model.rightEye.right;
+		this.rightRecommendedFOV.renderWidth = model.resolution.width;
+		this.rightRecommendedFOV.renderHeight = model.resolution.height;
+		this.rightRecommendedFOV.offset[ 0 ] = model.rightEye.offset;
 		
 		window.__extHMDResetPose = true;
 
@@ -214,21 +281,21 @@ var source = '(' + function () {
 
 	function VRFieldOfView() {
 
-		this.upDegrees = 55.814;
-		this.downDegrees = 55.728;
-		this.leftDegrees = 54.429;
-		this.rightDegrees = 51.288;
+		this.upDegrees = 0;
+		this.downDegrees = 0;
+		this.leftDegrees = 0;
+		this.rightDegrees = 0;
 
 	}
 
 	function VREyeParameters() {
 
-		this.eyeTranslation = .032;
+		this.eyeTranslation = 0;
 		this.recommendedFieldOfView = new VRFieldOfView();
-		this.offset = new Float32Array( [ 0.032, 0, 0 ] );
+		this.offset = new Float32Array( [ 0, 0, 0 ] );
 		this.fieldOfView = new VRFieldOfView();
-		this.renderWidth = 1512;
-		this.renderHeight = 1680;
+		this.renderWidth = 0;
+		this.renderHeight = 0;
 
 	}
 
@@ -239,15 +306,15 @@ var source = '(' + function () {
 
 	}
 
-	function PositionSensorVRDevice() {
+	function PositionSensorVRDevice( model ) {
 
-		this.deviceName = 'VR HMD';
+		this.deviceName = model.name;
 
 		this.state = new VRPositionState();
 
 	}
 
-	function VRPositionState() {
+	function VRPositionState( model ) {
 
 		this.angularAcceleration = new DOMPoint();
 		this.angularVelocity = new DOMPoint();
@@ -257,8 +324,8 @@ var source = '(' + function () {
 		this.position = new DOMPoint();
 		this.timestamp = null;
 
-		this.hasPosition = true;
-		this.hasOrientation = true;
+		this.hasPosition = model.features.hasPosition;
+		this.hasOrientation = model.features.hasOrientation;
 
 	}
 
@@ -304,7 +371,7 @@ var source = '(' + function () {
 
 		return new Promise( function( resolve, reject ) {
 
-			resolve( [ new HMDVRDevice(), new PositionSensorVRDevice() ] );
+			resolve( [ new HMDVRDevice( ViveData ), new PositionSensorVRDevice( ViveData ) ] );
 
 		} );
 

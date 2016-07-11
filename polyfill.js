@@ -126,6 +126,11 @@ var source = '(' + function () {
 		return new Promise( function( resolve, reject ) {
 
 			this.isPresenting = true;
+
+			var event = document.createEvent('Event');
+			event.initEvent('vrdisplaypresentchange', false, false);
+			window.dispatchEvent(event);
+
 			resolve();
 
 		}.bind( this ) );

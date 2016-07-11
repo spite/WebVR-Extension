@@ -10,6 +10,7 @@ https://github.com/spite/WebVR-Extension
 
 ### Changed
 - Removed Float32Array allocation in VRDisplay.getPose by @spite
+- Profiles for Vive, Rift and Cardboard by @spite
 
 ### Greetings
 - @edankwan for helping debug issue

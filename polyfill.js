@@ -113,7 +113,14 @@ var source = '(' + function () {
 			this.pose.position[ 2 ] = window.__extHMDPosition[ 2 ];
 		}
 
-		if( window.__extHMDOrientation ) this.pose.orientation = new Float32Array( __extHMDOrientation );
+		if( window.__extHMDOrientation ) {
+
+			this.pose.orientation[ 0 ] = __extHMDOrientation[ 0 ];
+			this.pose.orientation[ 1 ] = __extHMDOrientation[ 1 ];
+			this.pose.orientation[ 2 ] = __extHMDOrientation[ 2 ];
+			this.pose.orientation[ 3 ] = __extHMDOrientation[ 3 ];
+
+		}
 
 		this.pose.timestamp = startDate + ( performance.now() - startPerfNow );
 

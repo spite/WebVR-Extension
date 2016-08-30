@@ -6,12 +6,12 @@
 	"devtools_page": "devtools.html",
 	"description": "WebVR API Emulation",
 	"background": {
-		"scripts": [
-			"background.js"
-		]
+		"scripts": [ "common.js", "background.js" ]
 	},
 	"permissions": [
-		"tabs","<all_urls>"
+		"tabs",
+		"<all_urls>",
+		"storage"
 	],
 	"content_scripts": [{
 		"matches": ["<all_urls>"],

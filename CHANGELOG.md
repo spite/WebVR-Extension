@@ -4,6 +4,8 @@ For "Chrome DevTools extension to emulate WebVR API"
 https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
+
+## [1.0.5] - 2016-08-30
 ### Added
 - cancelAnimationFrame by @johnmaf
 

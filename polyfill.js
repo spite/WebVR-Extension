@@ -132,7 +132,13 @@ var source = '(' + function () {
 
 	VRDisplay.prototype.requestAnimationFrame = function( c ) {
 
-		requestAnimationFrame( c );
+		return requestAnimationFrame( c );
+
+	}
+
+	VRDisplay.prototype.cancelAnimationFrame = function(handle) {
+
+		cancelAnimationFrame(handle);
 
 	}
 

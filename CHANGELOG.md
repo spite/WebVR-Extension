@@ -4,8 +4,12 @@ For "Chrome DevTools extension to emulate WebVR API"
 https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
+### Added
+- cancelAnimationFrame by @johnmaf
+
 ### Fixed
-- Populate VRDisplay's right eye offset from model's right eye offset by @johnmaf
+- Populate VRDisplay's righteye offset from model's right eye offset by @johnmaf
+- Return value for requestAnimationFrame by @johnmaf
 
 ## [1.0.4] - 2016-08-30
 ### Fixed

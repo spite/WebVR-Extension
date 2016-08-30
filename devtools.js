@@ -21,6 +21,12 @@ var panelWindow = null;
 
 port.onMessage.addListener( function( msg ) {
 
+	switch( msg.action ) {
+		case 'pose':
+		notifyPose( msg.position, msg.rotation );
+		break;
+	}
+
 } );
 
 function initialise( panel ) {

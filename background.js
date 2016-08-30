@@ -12,21 +12,14 @@ var defaultSettings = {
 
 loadSettings().then( res => {
 	settings = res;
-	//notifySettings();
 	log( 'Script and settings loaded', settings );
 } );
 
-function notifySettings() {
-
-	log( 'settings', settings );
+function notifyPose( msg ) {
 
 	Object.keys( connections ).forEach( tab => {
-		var port = connections[ tab ].devtools;
-		port.postMessage( {
-			action: 'settings',
-			settings: settings
-		} );
-		inject( port );
+		var port = connections[ tab ].contentScript;
+		if( port ) port.postMessage( msg );
 	} );
 
 }
@@ -62,6 +55,14 @@ chrome.runtime.onConnect.addListener( function( port ) {
 		if( !connections[ tabId ] ) connections[ tabId ] = {};
 		connections[ tabId ][ name ] = port;
 
+		if( name === 'panel' ) {
+			switch( msg.action ) {
+				case 'pose':
+				notifyPose( msg );
+				//connections[ tabId ].contentScript.postMessage( msg );
+				break;
+			}
+		}
 		//log( sender );
 		log( 'port.onMessage', port.name, msg );
 

@@ -10,6 +10,24 @@ function log() {
 
 log( 'Polyfill', window.location.toString() );
 
+var port = chrome.runtime.connect( { name: 'contentScript' } );
+port.postMessage( { method: 'ready' } );
+
+port.onMessage.addListener( function( msg ) {
+
+	switch( msg.action ) {
+		case 'pose':
+		window.postMessage({
+			direction: 'from-webvr-content-script',
+			action: 'pose',
+			position: msg.position,
+			rotation: msg.rotation
+		}, '*' );
+		break;
+	}
+
+} );
+
 var source = '(' + function () {
 
 	'use strict';
@@ -396,6 +414,23 @@ var source = '(' + function () {
 			resolve( [ new HMDVRDevice( ViveData ), new PositionSensorVRDevice( ViveData ) ] );
 
 		} );
+
+	}
+
+	window.addEventListener( 'message', function(event) {
+		if (event.source == window &&
+		    event.data.direction &&
+		    event.data.direction == 'from-webvr-content-script' ) {
+				if( event.data.action === 'pose' ) {
+					updatePose( event.data.position, event.data.rotation )
+				}
+		}
+	});
+
+	function updatePose( position, rotation ) {
+
+		window.__extHMDPosition = [ position.x, position.y, position.z ];
+		window.__extHMDOrientation = [ rotation.x, rotation.y, rotation.z, rotation.w ];
 
 	}
 

@@ -153,7 +153,11 @@ function render() {
 		orientationSpans[ 2 ].textContent = hmd.quaternion.w.toFixed( 2 );
 
 		//if( window.notifyPose ) window.notifyPose( hmd.position, hmd.quaternion );
-		post( { action: 'pose', position: hmd.position, rotation: hmd.quaternion } );
+		post( {
+			action: 'pose',
+			position: { x: hmd.position.x, y: hmd.position.y, z: hmd.position.z },
+			rotation: { x: hmd.quaternion.x, y: hmd.quaternion.y, z: hmd.quaternion.z, w: hmd.quaternion.w }
+		} );
 
 		control.scale.setScalar( 1.5 / camera.zoom );
 

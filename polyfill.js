@@ -134,7 +134,7 @@ var source = '(' + function () {
 		this.rightEyeParameters.fieldOfView.rightDegrees = model.rightEye.right;
 		this.rightEyeParameters.renderWidth = model.resolution.width;
 		this.rightEyeParameters.renderHeight = model.resolution.height;
-		this.rightEyeParameters.offset[ 0 ] = model.leftEye.offset;
+		this.rightEyeParameters.offset[ 0 ] = model.rightEye.offset;
 
 		window.__extHMDResetPose = true;
 

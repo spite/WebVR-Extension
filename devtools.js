@@ -27,7 +27,8 @@ function initialise( panel ) {
 
 	panel.onShown.addListener( function ( wnd ) {
 
-		wnd.notifyPose = notifyPose
+		if( !wnd.notifyPose ) wnd.notifyPose = notifyPose;
+		if( !wnd.checkReset ) wnd.checkReset = checkReset;
 
 	} );
 
@@ -35,7 +36,6 @@ function initialise( panel ) {
 
 function notifyPose( position, rotation ) {
 
-	//chrome.devtools.inspectedWindow.eval( 'console.log(' + JSON.stringify( position ) + ', ' + JSON.stringify( rotation ) + ')' );
 	var str = 'function __set( wnd ){' +
     'wnd.__extHMDPosition = [' +
         position.x + ', ' +
@@ -49,6 +49,19 @@ function notifyPose( position, rotation ) {
     '}; __set( window ); [].forEach.call( window.document.querySelectorAll( \'iframe\' ), function( w ) { __set( w.contentWindow ) } );';
 
     chrome.devtools.inspectedWindow.eval( str );
+
+}
+
+function checkReset( callback ) {
+
+	var str = 'window.__extHMDResetPose';
+	chrome.devtools.inspectedWindow.eval( str, function(result, isException) {
+		if( result === true ) {
+			callback();
+			var str = 'window.__extHMDResetPose = false;';
+			chrome.devtools.inspectedWindow.eval( str );
+		}
+	} );
 
 }
 

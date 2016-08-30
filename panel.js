@@ -1,3 +1,13 @@
+var port = chrome.runtime.connect( null, { name: `panel` } );
+var tabId = chrome.devtools.inspectedWindow.tabId
+
+function post( msg ) {
+
+	msg.tabId = tabId;
+	port.postMessage( msg );
+
+}
+
 var display = null;
 
 var positionSpans = [];
@@ -121,18 +131,15 @@ window.addEventListener( 'resize', onWindowResize );
 
 function render() {
 
-	var str = 'window.__extHMDResetPose';
-	chrome.devtools.inspectedWindow.eval( str, function(result, isException) {
-		if( result === true ) {
+	if( window.checkReset ) {
+		window.checkReset( function() {
 			invalidate();
 			hmd.position.set( 0, 0,0 );
 			hmd.quaternion.set( 0, 0, 0, 1 );
 			control.detach( hmd );
 			control.attach( hmd );
-			var str = 'window.__extHMDResetPose = false;';
-			chrome.devtools.inspectedWindow.eval( str );
-		}
-	} );
+		} );
+	}
 
 	if( invalidated ) {
 
@@ -145,7 +152,8 @@ function render() {
 		orientationSpans[ 2 ].textContent = hmd.quaternion.z.toFixed( 2 );
 		orientationSpans[ 2 ].textContent = hmd.quaternion.w.toFixed( 2 );
 
-		if( window.notifyPose ) window.notifyPose( hmd.position, hmd.quaternion );
+		//if( window.notifyPose ) window.notifyPose( hmd.position, hmd.quaternion );
+		post( { action: 'pose', position: hmd.position, rotation: hmd.quaternion } );
 
 		control.scale.setScalar( 1.5 / camera.zoom );
 

@@ -5,6 +5,10 @@ https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
 
+## [1.0.4] - 2016-08-30
+### Fixed
+- Fixed default quaternions by @spite
+
 ## [1.0.3] - 2016-07-12
 ### Added
 - Emit event vrdisplaypresentchange by @spite

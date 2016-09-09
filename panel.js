@@ -8,20 +8,21 @@ function post( msg ) {
 
 }
 
+var settings = {}
 var display = null;
 
 var positionSpans = [];
-positionSpans[ 0 ] = document.getElementById( 'position-x' );
-positionSpans[ 1 ] = document.getElementById( 'position-y' );
-positionSpans[ 2 ] = document.getElementById( 'position-z' );
+positionSpans[ 0 ] = ge( 'position-x' );
+positionSpans[ 1 ] = ge( 'position-y' );
+positionSpans[ 2 ] = ge( 'position-z' );
 
 var orientationSpans = [];
-orientationSpans[ 0 ] = document.getElementById( 'orientation-x' );
-orientationSpans[ 1 ] = document.getElementById( 'orientation-y' );
-orientationSpans[ 2 ] = document.getElementById( 'orientation-z' );
-orientationSpans[ 3 ] = document.getElementById( 'orientation-w' );
+orientationSpans[ 0 ] = ge( 'orientation-x' );
+orientationSpans[ 1 ] = ge( 'orientation-y' );
+orientationSpans[ 2 ] = ge( 'orientation-z' );
+orientationSpans[ 3 ] = ge( 'orientation-w' );
 
-var container = document.getElementById( 'canvas-container' );
+var container = ge( 'canvas-container' );
 
 var renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
 renderer.setPixelRatio( window.devicePixelRatio );
@@ -101,8 +102,8 @@ controls.target.set( 0, 0, 0 );
 var control = new THREE.TransformControls( camera, renderer.domElement );
 control.addEventListener( 'change', onPoseChange );
 control.attach( hmd );
-control.setMode( "translate" );
-control.setSpace( "local" );
+control.setMode( 'translate' );
+control.setSpace( 'local' );
 scene.add( control );
 
 function onPoseChange() {
@@ -112,6 +113,7 @@ function onPoseChange() {
 		position: { x: hmd.position.x, y: hmd.position.y, z: hmd.position.z },
 		rotation: { x: hmd.quaternion.x, y: hmd.quaternion.y, z: hmd.quaternion.z, w: hmd.quaternion.w }
 	} );
+
 	invalidate();
 
 }
@@ -158,6 +160,7 @@ function render() {
 
 		renderer.render( scene, camera );
 		invalidated = false;
+
 	}
 
 	requestAnimationFrame( render );
@@ -212,17 +215,81 @@ window.updatePose = function( position, rotation ) {
 
 }
 
-document.getElementById( 'reset-pose-btn' ).addEventListener( 'click', function() {
+ge( 'reset-room-btn' ).addEventListener( 'click', function() {
+
+	camera.position.set( 2, 2, 2 );
+	camera.lookAt( scene.position );
+	controls.reset();
+	controls.center.set( 0, 0, 0 );
+	controls.zoom = 1;
+	controls.update();
+
+	invalidate();
+
+} );
+
+ge( 'reset-pose-btn' ).addEventListener( 'click', function() {
 
 	post( { action: 'reset-pose' } );
 
 } );
 
-document.getElementById( 'save-pose-btn' ).addEventListener( 'click', function() {
+ge( 'save-pose-btn' ).addEventListener( 'click', function() {
 
-	post( { action: 'save-pos' } );
+	post( {
+		action: 'save-pose',
+		pose: {
+			position: { x: hmd.position.x, y: hmd.position.y, z: hmd.position.z },
+			rotation: { x: hmd.quaternion.x, y: hmd.quaternion.y, z: hmd.quaternion.z, w: hmd.quaternion.w }
+		}
+	} );
 
 } );
+
+function updateSettings( s ) {
+
+	settings = s;
+	ge( 'persist-pose-option' ).checked = settings.persist;
+	ge( 'individual-pose-option' ).checked = settings.individualPose;
+
+	while( ge( 'saved-poses' ).firstChild ) {
+		ge( 'saved-poses' ).removeChild( ge( 'saved-poses' ).firstChild );
+	}
+
+	settings.poses.forEach( ( pose, i ) => {
+		var p = document.createElement( 'p' );
+		var op = document.createElement( 'span' );
+		op.textContent = pose.name;
+		op.addEventListener( 'click', function( e ) {
+			updatePose( pose.position, pose.rotation );
+			onPoseChange();
+		} );
+		var del = document.createElement( 'span' );
+		del.textContent = 'x';
+		del.addEventListener( 'click', function( e ) {
+			post( {
+				action: 'remove-pose',
+				id: i
+			} );
+		} );
+		p.appendChild( op );
+		p.appendChild( del );
+		ge( 'saved-poses' ).appendChild( p );
+	})
+
+}
+
+ge( 'persist-pose-option' ).addEventListener( 'change', saveSettings );
+ge( 'individual-pose-option' ).addEventListener( 'change', saveSettings );
+
+function saveSettings() {
+
+	settings.persist = ge( 'persist-pose-option' ).checked;
+	settings.individualPose = ge( 'individual-pose-option' ).checked;
+
+	post( { action: 'save-settings', settings: settings } );
+
+}
 
 onWindowResize();
 render();

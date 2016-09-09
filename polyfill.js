@@ -13,7 +13,14 @@ function log() {
 log( 'Polyfill', window.location.toString() );
 
 var port = chrome.runtime.connect( { name: 'contentScript' } );
-port.postMessage( { method: 'script-ready' } );
+
+function post( msg ) {
+
+	port.postMessage( msg );
+
+}
+
+post( { method: 'script-ready' } );
 
 port.onMessage.addListener( function( msg ) {
 
@@ -33,13 +40,13 @@ port.onMessage.addListener( function( msg ) {
 
 window.addEventListener( 'webvr-ready', function() {
 
-	port.postMessage( { action: 'page-ready' } );
+	post( { action: 'page-ready' } );
 
 } );
 
 window.addEventListener( 'webvr-resetpose', function() {
 
-	port.postMessage( { action: 'reset-pose' } );
+	post( { action: 'reset-pose' } );
 
 } );
 
@@ -71,11 +78,10 @@ var source = '(' + function () {
 		rightEye: { offset: 0.030, up: 40, down: 40, left: 40, right: 40 }
 	}
 
-	window.__extHMDPosition = new Float32Array( [ 0, 0, 0 ] );
-	window.__extHMDOrientation = new Float32Array( [ 0, 0, 0, 1 ] );
-
 	var startDate = Date.now();
 	var startPerfNow = performance.now();
+
+	// WebVR 1.0
 
 	function VRDisplayCapabilities () {
 

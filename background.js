@@ -7,7 +7,10 @@ var script = '';
 var defaultSettings = {
 
 	persist: true,
-	share: true
+	individualPose: false,
+	poses: [],
+	poseCount: 0
+
 }
 
 var defaultPose = {
@@ -22,9 +25,22 @@ var poses = {};
 
 loadSettings().then( res => {
 	settings = res;
-	settings.share = true;
+	notifySettings();
 	log( 'Script and settings loaded', settings );
 } );
+
+function notifySettings() {
+
+	Object.keys( connections ).forEach( tab => {
+		if( connections[ tab ].devtools ) {
+			connections[ tab ].devtools.postMessage( {
+				action: 'settings',
+				settings: settings
+			} )
+		}
+	} );
+
+}
 
 function notifyPoseToInstance( pose, tabId ) {
 
@@ -34,7 +50,12 @@ function notifyPoseToInstance( pose, tabId ) {
 		rotation: pose.rotation
 	};
 
-	connections[ tabId ].contentScript.postMessage( msg );
+	// there should always be at least a content script
+	// but may be the extension has been reloaded
+
+	if( connections[ tabId ].contentScript) {
+		connections[ tabId ].contentScript.postMessage( msg );
+	}
 
 	if( connections[ tabId ].devtools) {
 		connections[ tabId ].devtools.postMessage( msg );
@@ -44,15 +65,15 @@ function notifyPoseToInstance( pose, tabId ) {
 
 function notifyPose( tabId ) {
 
-	if( settings.share ) {
+	if( settings.individualPose ) {
+
+		notifyPoseToInstance( poses[ tabId ], tabId );
+
+	} else {
 
 		Object.keys( connections ).forEach( tab => {
 			notifyPoseToInstance( globalPose, tab );
 		} );
-
-	} else {
-
-		notifyPoseToInstance( poses[ tabId ], tabId );
 
 	}
 
@@ -65,6 +86,13 @@ chrome.runtime.onConnect.addListener( function( port ) {
 	log( 'New connection (chrome.runtime.onConnect) from', port.name, port.sender.frameId, port );
 
 	var name = port.name;
+
+	if( name === 'devtools' ){
+		port.postMessage( {
+			action: 'settings',
+			settings: settings
+		} );
+	}
 
 	function listener( msg, sender, reply ) {
 
@@ -82,6 +110,26 @@ chrome.runtime.onConnect.addListener( function( port ) {
 
 		if( name === 'panel' ) {
 			switch( msg.action ) {
+				case 'save-settings':
+				settings = msg.settings;
+				saveSettings( msg.settings );
+				notifySettings();
+				break;
+				case 'save-pose':
+				settings.poseCount++;
+				settings.poses.push( {
+					name: `Pose ${settings.poseCount}`,
+					position: msg.pose.position,
+					rotation: msg.pose.rotation
+				} );
+				saveSettings( settings );
+				notifySettings();
+				break;
+				case 'remove-pose':
+				settings.poses.splice( msg.id, 1 );
+				saveSettings( settings );
+				notifySettings();
+				break;
 				case 'pose':
 				globalPose.position = msg.position;
 				globalPose.rotation = msg.rotation;
@@ -96,6 +144,9 @@ chrome.runtime.onConnect.addListener( function( port ) {
 
 		if( name === 'contentScript' ) {
 			if( msg.action === 'page-ready' ) {
+				if( !settings.persist ) {
+					poses[ tabId ] = defaultPose;
+				}
 				notifyPose( tabId );
 			}
 		}

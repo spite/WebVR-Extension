@@ -32,6 +32,8 @@ body{ background-color: #eee; -webkit-user-select: none; cursor: default; overfl
 		<input type="checkbox" id="individual-pose-option"/> <label for="individual-pose-option">Keep individual pose per tab</label>
 		<button id="reset-pose-btn">Reset Pose</button>
 		<button id="save-pose-btn">Save Pose</button>
+		<div id="saved-poses" ></div>
+		<button id="reset-room-btn" >Reset room</button>
 		</p>
 	</div>
 
@@ -46,13 +48,11 @@ body{ background-color: #eee; -webkit-user-select: none; cursor: default; overfl
 			<p><span class="var-name" >Position</span> <span id="position-x" >0</span> <span id="position-y" >0</span> <span id="position-z" >0</span></p>
 			<p><span class="var-name" >Orientation</span> <span id="orientation-x" >0</span> <span id="orientation-y" >0</span> <span id="orientation-z" >0</span> <span id="orientation-w" >0</span></p>
 		</div>
-		<div class="block">
-			<p>Stored positions (coming soon)</p>
-		</div>
 	</div>
 
 </div>
 
 </body>
+<script src="utils.js"></script>
 <script src="panel.js"></script>
 </html>

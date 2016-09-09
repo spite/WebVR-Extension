@@ -6,38 +6,59 @@ var script = '';
 
 var defaultSettings = {
 
-	persist: true
-
+	persist: true,
+	share: true
 }
+
+var defaultPose = {
+	position: { x: 0, y: 0, z: 0 },
+	rotation: { x: 0, y: 0, z: 0, w: 1 }
+};
+var globalPose = {
+	position: { x: 0, y: 0, z: 0 },
+	rotation: { x: 0, y: 0, z: 0, w: 1 }
+};
+var poses = {};
 
 loadSettings().then( res => {
 	settings = res;
+	settings.share = true;
 	log( 'Script and settings loaded', settings );
 } );
 
-function notifyPose( msg ) {
+function notifyPoseToInstance( pose, tabId ) {
 
-	Object.keys( connections ).forEach( tab => {
-		var port = connections[ tab ].contentScript;
-		if( port ) port.postMessage( msg );
-	} );
+	var msg =  {
+		action: 'pose',
+		position: pose.position,
+		rotation: pose.rotation
+	};
+
+	connections[ tabId ].contentScript.postMessage( msg );
+
+	if( connections[ tabId ].devtools) {
+		connections[ tabId ].devtools.postMessage( msg );
+	}
+
+}
+
+function notifyPose( tabId ) {
+
+	if( settings.share ) {
+
+		Object.keys( connections ).forEach( tab => {
+			notifyPoseToInstance( globalPose, tab );
+		} );
+
+	} else {
+
+		notifyPoseToInstance( poses[ tabId ], tabId );
+
+	}
 
 }
 
 var connections = {};
-
-// Post back to Devtools from content
-chrome.runtime.onMessage.addListener( function (message, sender, sendResponse) {
-
-	//log( 'onMessage', message, sender );
-	if ( sender.tab && connections[ sender.tab.id ] ) {
-		var port = connections[ sender.tab.id ].devtools;
-		port.postMessage( { action: 'fromScript', data: message } );
-	}
-
-	return true;
-
-} );
 
 chrome.runtime.onConnect.addListener( function( port ) {
 
@@ -55,15 +76,37 @@ chrome.runtime.onConnect.addListener( function( port ) {
 		if( !connections[ tabId ] ) connections[ tabId ] = {};
 		connections[ tabId ][ name ] = port;
 
+		if( !poses[ tabId ] ) {
+			poses[ tabId ] = defaultPose;
+		}
+
 		if( name === 'panel' ) {
 			switch( msg.action ) {
 				case 'pose':
-				notifyPose( msg );
-				//connections[ tabId ].contentScript.postMessage( msg );
+				globalPose.position = msg.position;
+				globalPose.rotation = msg.rotation;
+				poses[ tabId ] = {
+					position: msg.position,
+					rotation: msg.rotation
+				};
+				notifyPose( tabId );
 				break;
 			}
 		}
-		//log( sender );
+
+		if( name === 'contentScript' ) {
+			if( msg.action === 'page-ready' ) {
+				notifyPose( tabId );
+			}
+		}
+
+		if( msg.action === 'reset-pose' ) {
+			globalPose.position = defaultPose.position;
+			globalPose.rotation = defaultPose.rotation;
+			poses[ tabId ] = defaultPose;
+			notifyPose( tabId );
+		}
+
 		log( 'port.onMessage', port.name, msg );
 
 	}

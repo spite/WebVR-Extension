@@ -1,30 +1,45 @@
 function log() {
 
-	var args = Array.from( arguments );
-	args.unshift( 'background: #007AA3; color: #ffffff; text-shadow: 0 -1px #000; padding: 4px 0 4px 0; line-height: 0' );
-	args.unshift( `%c WebVREmu ` );
-
-	console.log.apply( console, args );
+	console.log.apply(
+		console, [
+			`%c WebVREmu `,
+			'background: #007AA3; color: #ffffff; text-shadow: 0 -1px #000; padding: 4px 0 4px 0; line-height: 0',
+			...arguments
+		]
+	);
 
 }
 
 log( 'Polyfill', window.location.toString() );
 
 var port = chrome.runtime.connect( { name: 'contentScript' } );
-port.postMessage( { method: 'ready' } );
+port.postMessage( { method: 'script-ready' } );
 
 port.onMessage.addListener( function( msg ) {
 
 	switch( msg.action ) {
 		case 'pose':
-		window.postMessage({
-			direction: 'from-webvr-content-script',
-			action: 'pose',
-			position: msg.position,
-			rotation: msg.rotation
-		}, '*' );
+		var e = new CustomEvent( 'webvr-pose', {
+			detail: {
+				position: msg.position,
+				rotation: msg.rotation
+			}
+		} );
+		window.dispatchEvent( e );
 		break;
 	}
+
+} );
+
+window.addEventListener( 'webvr-ready', function() {
+
+	port.postMessage( { action: 'page-ready' } );
+
+} );
+
+window.addEventListener( 'webvr-resetpose', function() {
+
+	port.postMessage( { action: 'reset-pose' } );
 
 } );
 
@@ -58,7 +73,6 @@ var source = '(' + function () {
 
 	window.__extHMDPosition = new Float32Array( [ 0, 0, 0 ] );
 	window.__extHMDOrientation = new Float32Array( [ 0, 0, 0, 1 ] );
-	window.__extHMDResetPose = true;
 
 	var startDate = Date.now();
 	var startPerfNow = performance.now();
@@ -154,8 +168,22 @@ var source = '(' + function () {
 		this.rightEyeParameters.renderHeight = model.resolution.height;
 		this.rightEyeParameters.offset[ 0 ] = model.rightEye.offset;
 
-		window.__extHMDResetPose = true;
+		window.addEventListener( 'webvr-pose', function( e ) {
 
+			this.pose.linearVelocity[ 0 ] = e.detail.position.x - this.pose.position[ 0 ];
+			this.pose.linearVelocity[ 1 ] = e.detail.position.y - this.pose.position[ 1 ];
+			this.pose.linearVelocity[ 2 ] = e.detail.position.z - this.pose.position[ 2 ];
+
+			this.pose.position[ 0 ] = e.detail.position.x;
+			this.pose.position[ 1 ] = e.detail.position.y;
+			this.pose.position[ 2 ] = e.detail.position.z;
+
+			this.pose.orientation[ 0 ] = e.detail.rotation.x;
+			this.pose.orientation[ 1 ] = e.detail.rotation.y;
+			this.pose.orientation[ 2 ] = e.detail.rotation.z;
+			this.pose.orientation[ 3 ] = e.detail.rotation.w;
+
+		}.bind( this ) );
 	}
 
 	VRDisplay.prototype.requestAnimationFrame = function( c ) {
@@ -178,26 +206,6 @@ var source = '(' + function () {
 	}
 
 	VRDisplay.prototype.getPose = function() {
-
-		if( window.__extHMDPosition ) {
-
-			this.pose.linearVelocity[ 0 ] = window.__extHMDPosition[ 0 ] - this.pose.position[ 0 ];
-			this.pose.linearVelocity[ 1 ] = window.__extHMDPosition[ 1 ] - this.pose.position[ 1 ];
-			this.pose.linearVelocity[ 2 ] = window.__extHMDPosition[ 2 ] - this.pose.position[ 2 ];
-
-			this.pose.position[ 0 ] = window.__extHMDPosition[ 0 ];
-			this.pose.position[ 1 ] = window.__extHMDPosition[ 1 ];
-			this.pose.position[ 2 ] = window.__extHMDPosition[ 2 ];
-		}
-
-		if( window.__extHMDOrientation ) {
-
-			this.pose.orientation[ 0 ] = __extHMDOrientation[ 0 ];
-			this.pose.orientation[ 1 ] = __extHMDOrientation[ 1 ];
-			this.pose.orientation[ 2 ] = __extHMDOrientation[ 2 ];
-			this.pose.orientation[ 3 ] = __extHMDOrientation[ 3 ];
-
-		}
 
 		this.pose.timestamp = startDate + ( performance.now() - startPerfNow );
 
@@ -240,23 +248,28 @@ var source = '(' + function () {
 
 	VRDisplay.prototype.resetPose = function() {
 
-		window.__extHMDPosition = new Float32Array( [ 0, 0, 0 ] );
-		window.__extHMDOrientation = new Float32Array( [ 0, 0, 0, 1 ] );
-		window.__extHMDResetPose = true;
+		var event = new Event( 'webvr-resetpose' );
+		window.dispatchEvent( event );
 
 	}
 
 	window.VRDisplay = VRDisplay;
 
-	navigator.getVRDisplays = function() {
+	( function() {
 
-		return new Promise( function( resolve, reject ) {
+		var vrD = new VRDisplay( ViveData )
 
-			resolve( [ new VRDisplay( ViveData ) ] );
+		navigator.getVRDisplays = function() {
 
-		} );
+			return new Promise( function( resolve, reject ) {
 
-	}
+				resolve( [ vrD ] );
+
+			} );
+
+		}
+
+	} )();
 
 	// LEGACY
 
@@ -299,8 +312,6 @@ var source = '(' + function () {
 		this.rightRecommendedFOV.renderWidth = model.resolution.width;
 		this.rightRecommendedFOV.renderHeight = model.resolution.height;
 		this.rightRecommendedFOV.offset[ 0 ] = model.rightEye.offset;
-
-		window.__extHMDResetPose = true;
 
 	}
 
@@ -348,7 +359,24 @@ var source = '(' + function () {
 
 		this.deviceName = model.name;
 
-		this.state = new VRPositionState();
+		this.state = new VRPositionState( model );
+
+		window.addEventListener( 'webvr-pose', function( e ) {
+
+			this.state.linearVelocity.x = e.detail.position.x - this.state.position.x;
+			this.state.linearVelocity.y = e.detail.position.y - this.state.position.y;
+			this.state.linearVelocity.z = e.detail.position.z - this.state.position.z;
+
+			this.state.position.x = e.detail.position.x;
+			this.state.position.y = e.detail.position.y;
+			this.state.position.z = e.detail.position.z;
+
+			this.state.orientation.x = e.detail.rotation.x;
+			this.state.orientation.y = e.detail.rotation.y;
+			this.state.orientation.z = e.detail.rotation.z;
+			this.state.orientation.w = e.detail.rotation.w;
+
+		}.bind( this ) );
 
 	}
 
@@ -376,26 +404,6 @@ var source = '(' + function () {
 
 	PositionSensorVRDevice.prototype.getState = function() {
 
-		if( window.__extHMDPosition ) {
-
-			this.state.linearVelocity.x = window.__extHMDPosition[ 0 ] - this.state.position.x;
-			this.state.linearVelocity.y = window.__extHMDPosition[ 1 ] - this.state.position.y;
-			this.state.linearVelocity.z = window.__extHMDPosition[ 2 ] - this.state.position.z;
-
-			this.state.position.x = window.__extHMDPosition[ 0 ];
-			this.state.position.y = window.__extHMDPosition[ 1 ];
-			this.state.position.z = window.__extHMDPosition[ 2 ];
-		}
-
-		if( window.__extHMDOrientation ) {
-
-			this.state.orientation.x = __extHMDOrientation[ 0 ];
-			this.state.orientation.y = __extHMDOrientation[ 1 ];
-			this.state.orientation.z = __extHMDOrientation[ 2 ];
-			this.state.orientation.w = __extHMDOrientation[ 3 ];
-
-		}
-
 		this.state.timestamp = startDate + ( performance.now() - startPerfNow );
 
 		return this.state;
@@ -405,32 +413,27 @@ var source = '(' + function () {
 	window.HMDVRDevice = HMDVRDevice;
 	window.PositionSensorVRDevice = PositionSensorVRDevice;
 
-	navigator.getVRDevices = function() {
+	window.VRDisplay = VRDisplay;
 
-		return new Promise( function( resolve, reject ) {
+	( function() {
 
-			resolve( [ new HMDVRDevice( ViveData ), new PositionSensorVRDevice( ViveData ) ] );
+		var vrD = new HMDVRDevice( ViveData );
+		var vrP = new PositionSensorVRDevice( ViveData );
 
-		} );
+		navigator.getVRDevices = function() {
 
-	}
+			return new Promise( function( resolve, reject ) {
 
-	window.addEventListener( 'message', function(event) {
-		if (event.source == window &&
-		    event.data.direction &&
-		    event.data.direction == 'from-webvr-content-script' ) {
-				if( event.data.action === 'pose' ) {
-					updatePose( event.data.position, event.data.rotation )
-				}
+				resolve( [ vrD, vrP ] );
+
+			} );
+
 		}
-	});
 
-	function updatePose( position, rotation ) {
+	} )();
 
-		window.__extHMDPosition = [ position.x, position.y, position.z ];
-		window.__extHMDOrientation = [ rotation.x, rotation.y, rotation.z, rotation.w ];
-
-	}
+	var event = new Event( 'webvr-ready' );
+	window.dispatchEvent( event );
 
 } + ')();';
 
@@ -438,4 +441,3 @@ var script = document.createElement('script');
 script.textContent = source;
 (document.head||document.documentElement).appendChild(script);
 script.parentNode.removeChild(script);
-

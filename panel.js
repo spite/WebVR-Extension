@@ -99,11 +99,22 @@ controls.addEventListener( 'change', invalidate );
 controls.target.set( 0, 0, 0 );
 
 var control = new THREE.TransformControls( camera, renderer.domElement );
-control.addEventListener( 'change', invalidate );
+control.addEventListener( 'change', onPoseChange );
 control.attach( hmd );
 control.setMode( "translate" );
 control.setSpace( "local" );
 scene.add( control );
+
+function onPoseChange() {
+
+	post( {
+		action: 'pose',
+		position: { x: hmd.position.x, y: hmd.position.y, z: hmd.position.z },
+		rotation: { x: hmd.quaternion.x, y: hmd.quaternion.y, z: hmd.quaternion.z, w: hmd.quaternion.w }
+	} );
+	invalidate();
+
+}
 
 function onWindowResize() {
 
@@ -131,16 +142,6 @@ window.addEventListener( 'resize', onWindowResize );
 
 function render() {
 
-	if( window.checkReset ) {
-		window.checkReset( function() {
-			invalidate();
-			hmd.position.set( 0, 0,0 );
-			hmd.quaternion.set( 0, 0, 0, 1 );
-			control.detach( hmd );
-			control.attach( hmd );
-		} );
-	}
-
 	if( invalidated ) {
 
 		positionSpans[ 0 ].textContent = hmd.position.x.toFixed( 2 );
@@ -152,14 +153,8 @@ function render() {
 		orientationSpans[ 2 ].textContent = hmd.quaternion.z.toFixed( 2 );
 		orientationSpans[ 2 ].textContent = hmd.quaternion.w.toFixed( 2 );
 
-		//if( window.notifyPose ) window.notifyPose( hmd.position, hmd.quaternion );
-		post( {
-			action: 'pose',
-			position: { x: hmd.position.x, y: hmd.position.y, z: hmd.position.z },
-			rotation: { x: hmd.quaternion.x, y: hmd.quaternion.y, z: hmd.quaternion.z, w: hmd.quaternion.w }
-		} );
-
 		control.scale.setScalar( 1.5 / camera.zoom );
+		control.update();
 
 		renderer.render( scene, camera );
 		invalidated = false;
@@ -207,6 +202,27 @@ window.addEventListener( 'keydown', function ( event ) {
 	}
 
 });
+
+window.updatePose = function( position, rotation ) {
+
+	hmd.position.set( position.x, position.y, position.z );
+	hmd.quaternion.set( rotation.x, rotation.y, rotation.z, rotation.w );
+	control.update();
+	invalidate();
+
+}
+
+document.getElementById( 'reset-pose-btn' ).addEventListener( 'click', function() {
+
+	post( { action: 'reset-pose' } );
+
+} );
+
+document.getElementById( 'save-pose-btn' ).addEventListener( 'click', function() {
+
+	post( { action: 'save-pos' } );
+
+} );
 
 onWindowResize();
 render();

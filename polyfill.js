@@ -35,7 +35,7 @@ var source = '(' + function () {
 	var ViveData = {
 		name: 'Emulated HTC Vive DVT',
 		resolution: { width: 1512, height: 1680 },
-		features: { canPresent: true, hasExternalDisplay: false, hasOrientation: true, hasPosition: true },
+		features: { canPresent: true, hasExternalDisplay: true, hasOrientation: true, hasPosition: true },
 		leftEye: { offset: -0.032, up: 41.653, down: 48.008, left: 43.977, right: 35.575 },
 		rightEye: { offset: 0.032, up: 41.653, down: 48.008, left: 35.575, right: 43.977 }
 	}
@@ -43,7 +43,7 @@ var source = '(' + function () {
 	var RiftData = {
 		name: 'Emulated Oculus Rift CV1',
 		resolution: { width: 1332, height: 1586 },
-		features: { canPresent: true, hasExternalDisplay: false, hasOrientation: true, hasPosition: true },
+		features: { canPresent: true, hasExternalDisplay: true, hasOrientation: true, hasPosition: true },
 		leftEye: { offset: -0.032, up: 55.814, down: 55.728, left: 54.429, right: 51.288 },
 		rightEye: { offset: 0.032, up: 55.687, down: 55.658, left: 51.110, right: 54.397 }
 	}
@@ -211,8 +211,7 @@ var source = '(' + function () {
 
 			this.isPresenting = true;
 
-			var event = document.createEvent('Event');
-			event.initEvent('vrdisplaypresentchange', false, false);
+			var event = new Event( 'vrdisplaypresentchange' );
 			window.dispatchEvent(event);
 
 			resolve();
@@ -227,8 +226,7 @@ var source = '(' + function () {
 
 			this.isPresenting = false;
 
-			var event = document.createEvent('Event');
-			event.initEvent('vrdisplaypresentchange', false, false);
+			var event = new Event( 'vrdisplaypresentchange' );
 			window.dispatchEvent(event);
 
 			resolve();

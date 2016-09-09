@@ -183,8 +183,7 @@ var source = '(' + function () {
 
 			this.isPresenting = true;
 
-			var event = document.createEvent('Event');
-			event.initEvent('vrdisplaypresentchange', false, false);
+			var event = new Event( 'vrdisplaypresentchange' );
 			window.dispatchEvent(event);
 
 			resolve();
@@ -199,8 +198,7 @@ var source = '(' + function () {
 
 			this.isPresenting = false;
 
-			var event = document.createEvent('Event');
-			event.initEvent('vrdisplaypresentchange', false, false);
+			var event = new Event( 'vrdisplaypresentchange' );
 			window.dispatchEvent(event);
 
 			resolve();

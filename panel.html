@@ -3,13 +3,15 @@
 <style>
 *{ box-sizing: border-box; margin: 0; padding: 0; font-size: 12px;}
 body{ background-color: #eee; -webkit-user-select: none; cursor: default; overflow: hidden;}
-.layout{ display: flex; flex-direction: column; height: 100%; }
-.layout > div{ flex: 1 0 auto; }
-#csanvas-container{ flex: 0 1 auto }
+.layout{ position:fixed; display: flex; flex-direction: column; height: 100%; width: 100%;}
+.section{ display: flex; flex-direction: column; flex: 0 1 auto; align-self: stretch; }
+.subsection{ display: flex; flex-direction: column; flex: 0 0 auto; align-self: stretch; }
+#canvas-container{ flex: 1 0 auto; align-self: stretch; }
 .warning{ text-align: center; padding: 10px; background-color: #fecc34; color: #d70404; text-shadow: 0 1px 0 #ffffff;}
 .warning p{ padding: 5px 20px 5px 20px; }
-.block{ padding: 10px; }
+.block{}
 .var-name{ width: 80px; display: inline-block;}
+#saved-poses span{ padding: 4px;}
 </style>
 </head>
 <body>
@@ -18,33 +20,38 @@ body{ background-color: #eee; -webkit-user-select: none; cursor: default; overfl
 <script src="TransformControls.js"></script>
 <div class="layout">
 
-	<div class="warning">
+	<div class="warning section">
 		<p>Warning: this extension completely polyfills the WebVR API. If you have a working WebVR implementation, it will be replaced!</p>
 		<p>This is a work in progress in a very early stage, can't be turned off except by disabling or removing the extension</p>
 	</div>
 
-	<div class="block">
-		<p>Headset
-		<select>
-			<option>Vive</option>
-		</select>
-		<input type="checkbox" id="persist-pose-option"/> <label for="persist-pose-option">Persist pose between reloads</label>
-		<input type="checkbox" id="individual-pose-option"/> <label for="individual-pose-option">Keep individual pose per tab</label>
-		<button id="reset-pose-btn">Reset Pose</button>
-		<button id="save-pose-btn">Save Pose</button>
-		<div id="saved-poses" ></div>
-		<button id="reset-room-btn" >Reset room</button>
-		</p>
+	<div class="block section">
+		<div class="subsection">
+			<p>Headset
+			<select>
+				<option>Vive</option>
+			</select></p>
+		</div>
+		<div class="subsection">
+			<p><input type="checkbox" id="persist-pose-option"/> <label for="persist-pose-option">Persist pose between reloads</label></p>
+			<p><input type="checkbox" id="individual-pose-option"/> <label for="individual-pose-option">Keep individual pose per tab</label></p>
+		</div>
+		<div class="subsection">
+			<button id="reset-pose-btn">Reset Pose</button>
+			<button id="save-pose-btn">Save Pose</button>
+			<div id="saved-poses" ></div>
+			<button id="reset-room-btn" >Reset room</button>
+		</div>
 	</div>
 
-	<div id="canvas-container"></div>
+	<div id="canvas-container" class="section"></div>
 
-	<div id="bottom-panel">
-		<div class="block">
+	<div id="bottom-panel" class="section">
+		<div class="block subsection">
 			<p>Left-click and drag on screen to rotate - Right-click to pan - Mousewheel to zoom</p>
 			<p><b>W</b> Translate - <b>E</b> Rotate - <b>Ctrl</b> Snap to 1m</p>
 		</div>
-		<div class="block">
+		<div class="block subsection">
 			<p><span class="var-name" >Position</span> <span id="position-x" >0</span> <span id="position-y" >0</span> <span id="position-z" >0</span></p>
 			<p><span class="var-name" >Orientation</span> <span id="orientation-x" >0</span> <span id="orientation-y" >0</span> <span id="orientation-z" >0</span> <span id="orientation-w" >0</span></p>
 		</div>

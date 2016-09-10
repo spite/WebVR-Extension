@@ -264,8 +264,16 @@ function updateSettings( s ) {
 			updatePose( pose.position, pose.rotation );
 			onPoseChange();
 		} );
+		var ren = document.createElement( 'span' );
+		ren.textContent = 'Rename';
+		ren.addEventListener( 'click', function( e ) {
+			/*post( {
+				action: 'remove-pose',
+				id: i
+			} );*/
+		} );
 		var del = document.createElement( 'span' );
-		del.textContent = 'x';
+		del.textContent = 'Delete';
 		del.addEventListener( 'click', function( e ) {
 			post( {
 				action: 'remove-pose',
@@ -273,6 +281,7 @@ function updateSettings( s ) {
 			} );
 		} );
 		p.appendChild( op );
+		p.appendChild( ren );
 		p.appendChild( del );
 		ge( 'saved-poses' ).appendChild( p );
 	})

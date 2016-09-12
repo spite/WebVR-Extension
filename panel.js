@@ -264,14 +264,10 @@ function updateSettings( s ) {
 			updatePose( pose.position, pose.rotation );
 			onPoseChange();
 		} );
-		var ren = document.createElement( 'span' );
+		/*var ren = document.createElement( 'span' );
 		ren.textContent = 'Rename';
 		ren.addEventListener( 'click', function( e ) {
-			/*post( {
-				action: 'remove-pose',
-				id: i
-			} );*/
-		} );
+		} );*/
 		var del = document.createElement( 'object' );
 		del.setAttribute( 'type', 'image/svg+xml' );
 		del.setAttribute( 'data', 'assets/delete.svg' );

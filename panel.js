@@ -1,5 +1,7 @@
+"use strict";
+
 var port = chrome.runtime.connect( null, { name: `panel` } );
-var tabId = chrome.devtools.inspectedWindow.tabId
+var tabId = chrome.devtools.inspectedWindow.tabId;
 
 function post( msg ) {
 
@@ -8,7 +10,7 @@ function post( msg ) {
 
 }
 
-var settings = {}
+var settings = {};
 var display = null;
 
 var positionSpans = [];
@@ -39,7 +41,7 @@ chaperoneTexture.wrapS = chaperoneTexture.wrapT = THREE.RepeatWrapping;
 
 var roomGeometry = new THREE.BoxGeometry( 5, 2, 3 );
 
-var size = .4;
+var size = 0.4;
 var w = 5.2, d = 3.1, h = 2;
 var sw = Math.round( 2 * w );
 var sd = Math.round( 2 * d );
@@ -87,7 +89,7 @@ room.position.y = 1;
 room.renderOrder = -1;
 scene.add( room );
 
-var hmd = new THREE.Mesh( new THREE.BoxGeometry( .20, .11, .12 ), new THREE.MeshNormalMaterial() );
+var hmd = new THREE.Mesh( new THREE.BoxGeometry( 0.20, 0.11, 0.12 ), new THREE.MeshNormalMaterial() );
 scene.add( hmd );
 
 var invalidated = true;
@@ -225,7 +227,7 @@ window.updatePose = function( position, rotation ) {
 	hmd.quaternion.set( rotation.x, rotation.y, rotation.z, rotation.w );
 	invalidate();
 
-}
+};
 
 ge( 'reset-room-btn' ).addEventListener( 'click', function() {
 
@@ -300,7 +302,7 @@ function updateSettings( s ) {
 		//p.appendChild( ren );
 		p.appendChild( del );
 		ge( 'saved-poses' ).appendChild( p );
-	})
+	});
 
 }
 

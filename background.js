@@ -1,3 +1,5 @@
+var verbose = false;
+
 var extensionId = chrome.runtime.id;
 log( 'Background', extensionId );
 

@@ -1,4 +1,8 @@
+var verbose = false;
+
 function log() {
+
+	if( !verbose ) return;
 
 	console.log.apply(
 		console, [

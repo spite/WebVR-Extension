@@ -1,5 +1,7 @@
 function log() {
 
+	if( !verbose ) return;
+
 	var args = Array.from( arguments );
 	args.unshift( 'background: #007AA3; color: #ffffff; text-shadow: 0 -1px #000; padding: 4px 0 4px 0; line-height: 0' );
 	args.unshift( `%c WebVREmu ` );

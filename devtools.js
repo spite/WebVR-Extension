@@ -1,6 +1,10 @@
+var verbose = false;
+
 chrome.devtools.panels.create( "WebVR", "icon.png", "panel.html", initialise );
 
 function log( ...args ) {
+
+	if( !verbose ) return;
 
 	var strArgs = [
 		'"%c WebVREmu | DevTools "',

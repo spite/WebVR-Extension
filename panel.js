@@ -206,6 +206,21 @@ window.addEventListener( 'keydown', function ( event ) {
 
 });
 
+window.addEventListener( 'keyup', function ( event ) {
+
+	switch ( event.keyCode ) {
+
+		case 17: // Ctrl
+		control.setTranslationSnap( null );
+		control.setRotationSnap( null );
+		break;
+
+	}
+
+});
+
+
+
 window.updatePose = function( position, rotation ) {
 
 	hmd.position.set( position.x, position.y, position.z );

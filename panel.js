@@ -269,6 +269,7 @@ function updateSettings( s ) {
 		ren.addEventListener( 'click', function( e ) {
 		} );*/
 		var del = document.createElement( 'object' );
+		del.className = 'remove-entry';
 		del.setAttribute( 'type', 'image/svg+xml' );
 		del.setAttribute( 'data', 'assets/delete.svg' );
 		del.addEventListener( 'click', function( e ) {
@@ -276,9 +277,12 @@ function updateSettings( s ) {
 				action: 'remove-pose',
 				id: i
 			} );
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
 		} );
 		p.appendChild( op );
-		p.appendChild( ren );
+		//p.appendChild( ren );
 		p.appendChild( del );
 		ge( 'saved-poses' ).appendChild( p );
 	})
@@ -299,11 +303,20 @@ function saveSettings() {
 
 ge( 'select-pose-btn' ).addEventListener( 'click', e => {
 	ge( 'saved-poses' ).classList.toggle( 'collapsed' );
+	e.stopPropagation();
+	e.preventDefault();
+	return false;
 } );
 
 ge( 'disclaimer' ).addEventListener( 'click', e => {
 	ge( 'disclaimer-content' ).classList.toggle( 'collapsed' );
 })
+
+window.addEventListener( 'click', e => {
+
+	ge( 'saved-poses' ).classList.add( 'collapsed' );
+
+} );
 
 onWindowResize();
 render();

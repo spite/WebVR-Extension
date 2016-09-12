@@ -272,8 +272,9 @@ function updateSettings( s ) {
 				id: i
 			} );*/
 		} );
-		var del = document.createElement( 'span' );
-		del.textContent = 'Delete';
+		var del = document.createElement( 'object' );
+		del.setAttribute( 'type', 'image/svg+xml' );
+		del.setAttribute( 'data', 'assets/delete.svg' );
 		del.addEventListener( 'click', function( e ) {
 			post( {
 				action: 'remove-pose',
@@ -299,6 +300,14 @@ function saveSettings() {
 	post( { action: 'save-settings', settings: settings } );
 
 }
+
+ge( 'select-pose-btn' ).addEventListener( 'click', e => {
+	ge( 'saved-poses' ).classList.toggle( 'collapsed' );
+} );
+
+ge( 'disclaimer' ).addEventListener( 'click', e => {
+	ge( 'disclaimer-content' ).classList.toggle( 'collapsed' );
+})
 
 onWindowResize();
 render();

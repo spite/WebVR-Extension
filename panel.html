@@ -1,17 +1,33 @@
 <html>
 <head>
 <style>
-*{ box-sizing: border-box; margin: 0; padding: 0; font-size: 12px;}
+*{ box-sizing: border-box; margin: 0; padding: 0; font-size: 12px; text-shadow: 0 1px 0 #ffffff;}
 body{ background-color: #eee; -webkit-user-select: none; cursor: default; overflow: hidden;}
 .layout{ position:fixed; display: flex; flex-direction: column; height: 100%; width: 100%;}
-.section{ display: flex; flex-direction: column; flex: 0 1 auto; align-self: stretch; }
-.subsection{ display: flex; flex-direction: column; flex: 0 0 auto; align-self: stretch; }
-#canvas-container{ flex: 1 0 auto; align-self: stretch; }
-.warning{ text-align: center; padding: 10px; background-color: #fecc34; color: #d70404; text-shadow: 0 1px 0 #ffffff;}
+.section{ display: flex; flex-direction: column; flex: 0 0 auto; align-self: stretch; }
+.subsection{ display: flex; flex-direction: row; flex: 0 0 auto; align-self: stretch; padding: 5px 5px 0 5px;}
+#canvas-container{ flex: 1; align-self: stretch; }
+.warning{ padding: 10px; background-color: #fecc34; color: #d70404; }
 .warning p{ padding: 5px 20px 5px 20px; }
 .block{}
 .var-name{ width: 80px; display: inline-block;}
+#saved-poses-base{ position: relative; display }
+#saved-poses{ position: absolute; background-color: rgba(255,255,255,.6); padding: 5px; width: 200px; box-shadow: 0 2px 2px #888;}
+.collapsed{ display: none; }
 #saved-poses span{ padding: 4px;}
+.subsection p{ line-height: 1em }
+.subsection span{ padding: 4px 8px; display: inline-block; }
+button{ background-color: #eeeeee; border-radius: 4px; outline: none; border: 1px solid #ddd; padding: 5px 10px; position: relative; box-shadow: 0 2px 1px #ddd; margin: 1px; white-space: nowrap; text-indent: 16px; height: 2.3em;}
+button:hover{ background-color: #fafafa;}
+button:active{ background-color: #ffffff; box-shadow: inset 0 2px 1px #ddd; }
+button:active object{  }
+button.disabled{ opacity: .5; }
+button object{ pointer-events: none; width: 12px; height: 12px; margin-right: .5em; position: absolute; left: 10px; top: 50%; transform: translateY(-50%);}
+#disclaimer{ text-decoration: underline; cursor: pointer; padding: 10px; }
+.info{ background-color: #fafafa; box-shadow: 0 1px 1px #888; }
+#pose-info{ margin: 0 0 10px 10px; }
+.instructions{ padding: 10px; }
+a{ color: inherit; }
 </style>
 </head>
 <body>
@@ -20,40 +36,50 @@ body{ background-color: #eee; -webkit-user-select: none; cursor: default; overfl
 <script src="TransformControls.js"></script>
 <div class="layout">
 
-	<div class="warning section">
-		<p>Warning: this extension completely polyfills the WebVR API. If you have a working WebVR implementation, it will be replaced!</p>
-		<p>This is a work in progress in a very early stage, can't be turned off except by disabling or removing the extension</p>
+	<div class="section info">
+		<p id="disclaimer">Click for Disclaimer and instructions</p>
+		<div id="disclaimer-content" class="collapsed" >
+			<div class="instructions">
+				<p>Left-click and drag on screen to rotate - Right-click to pan - Mousewheel to zoom</p>
+				<p><b>W</b> Translate - <b>E</b> Rotate - <b>Ctrl</b> Snap to 1m</p><br/>
+				<p><b>Reset pose</b> to simulate a resetPose (HMD goes back to origin)<br/>
+				<b>Save pose</b> to store the current pose and use it later<br/>
+				<b>Selected saved Pose</b> to retrieve a previously saved pose</br>
+				<b>Reset room</b> to reset the transformation in the room viewer</p><br/>
+				<p>Project page: <a href="https://github.com/spite/WebVR-Extension" >GitHub</a></p>
+			</div>
+			<p class="warning"><b>Warning:</b> this extension completely polyfills the WebVR API. If you have a working WebVR implementation, it will be replaced! This is a work in progress in a very early stage, can't be turned off except by disabling or removing the extension</p>
+		</div>
 	</div>
 
 	<div class="block section">
 		<div class="subsection">
-			<p>Headset
+			<p><span style="display:none">Headset
 			<select>
 				<option>Vive</option>
-			</select></p>
+			</select></span>
+			<span><input type="checkbox" id="persist-pose-option"/> <label for="persist-pose-option">Persist pose between reloads</label></span>
+			<span><input type="checkbox" id="individual-pose-option"/> <label for="individual-pose-option">Keep individual pose per tab</label></<span>
+			<p>
 		</div>
 		<div class="subsection">
-			<p><input type="checkbox" id="persist-pose-option"/> <label for="persist-pose-option">Persist pose between reloads</label></p>
-			<p><input type="checkbox" id="individual-pose-option"/> <label for="individual-pose-option">Keep individual pose per tab</label></p>
-		</div>
-		<div class="subsection">
-			<button id="reset-pose-btn">Reset Pose</button>
-			<button id="save-pose-btn">Save Pose</button>
-			<div id="saved-poses" ></div>
-			<button id="reset-room-btn" >Reset room</button>
+			<p>
+				<button id="reset-pose-btn"><object type="image/svg+xml" data="assets/reset1.svg"></object>Reset Pose</button>
+				<button id="save-pose-btn"><object type="image/svg+xml" data="assets/save.svg"></object>Save Pose</button>
+				<div id="saved-poses-base">
+					<button id="select-pose-btn"><object type="image/svg+xml" data="assets/eye.svg"></object>Select saved Pose</button>
+					<div id="saved-poses" class="collapsed"></div>
+				</div>
+				<button id="reset-room-btn" ><object type="image/svg+xml" data="assets/reset2.svg"></object>Reset room</button>
+			</p>
 		</div>
 	</div>
 
 	<div id="canvas-container" class="section"></div>
 
 	<div id="bottom-panel" class="section">
-		<div class="block subsection">
-			<p>Left-click and drag on screen to rotate - Right-click to pan - Mousewheel to zoom</p>
-			<p><b>W</b> Translate - <b>E</b> Rotate - <b>Ctrl</b> Snap to 1m</p>
-		</div>
-		<div class="block subsection">
-			<p><span class="var-name" >Position</span> <span id="position-x" >0</span> <span id="position-y" >0</span> <span id="position-z" >0</span></p>
-			<p><span class="var-name" >Orientation</span> <span id="orientation-x" >0</span> <span id="orientation-y" >0</span> <span id="orientation-z" >0</span> <span id="orientation-w" >0</span></p>
+		<div id="pose-info" class="block subsection">
+			<p><span class="var-name" >Position</span> <span id="position-x" >0</span> <span id="position-y" >0</span> <span id="position-z" >0</span><br/><span class="var-name" >Orientation</span> <span id="orientation-x" >0</span> <span id="orientation-y" >0</span> <span id="orientation-z" >0</span> <span id="orientation-w" >0</span></p>
 		</div>
 	</div>
 

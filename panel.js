@@ -219,13 +219,10 @@ window.addEventListener( 'keyup', function ( event ) {
 
 });
 
-
-
 window.updatePose = function( position, rotation ) {
 
 	hmd.position.set( position.x, position.y, position.z );
 	hmd.quaternion.set( rotation.x, rotation.y, rotation.z, rotation.w );
-	control.update();
 	invalidate();
 
 }
@@ -277,7 +274,7 @@ function updateSettings( s ) {
 		op.textContent = pose.name;
 		op.addEventListener( 'click', function( e ) {
 			updatePose( pose.position, pose.rotation );
-			control.detach();
+			control.detach( hmd );
 			control.attach( hmd );
 			control.update();
 			onPoseChange();

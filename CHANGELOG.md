@@ -8,6 +8,7 @@ https://github.com/spite/WebVR-Extension
 - Options for persistence on reload by @spite
 - Options for sharing pose across tabs by @spite
 - Store and restore poses by @spite
+- Added link to repo and changelog by @spite
 
 ### Changed
 - Switched message passing to CustomEvent dispatching by @spite
@@ -15,6 +16,7 @@ https://github.com/spite/WebVR-Extension
 
 ### Fixed
 - Emulated HMDs had externalDisplay disabled by @spite
+- Ctrl key release by @spite
 
 ## [1.0.5] - 2016-08-30
 ### Added

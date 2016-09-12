@@ -7,7 +7,7 @@ var script = '';
 var defaultSettings = {
 
 	persist: true,
-	individualPose: false,
+	individualPose: true,
 	poses: [],
 	poseCount: 0
 

@@ -15,6 +15,7 @@ https://github.com/spite/WebVR-Extension
 
 ### Fixed
 - Emulated HMDs had externalDisplay disabled by @spite
+- Ctrl key release by @spite
 
 ## [1.0.5] - 2016-08-30
 ### Added

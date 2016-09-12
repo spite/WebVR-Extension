@@ -262,6 +262,9 @@ function updateSettings( s ) {
 		op.textContent = pose.name;
 		op.addEventListener( 'click', function( e ) {
 			updatePose( pose.position, pose.rotation );
+			control.detach();
+			control.attach( hmd );
+			control.update();
 			onPoseChange();
 		} );
 		/*var ren = document.createElement( 'span' );

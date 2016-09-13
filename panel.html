@@ -26,7 +26,7 @@ button object{ pointer-events: none; width: 12px; height: 12px; margin-right: .5
 #disclaimer{ text-decoration: underline; cursor: pointer; padding: 10px; }
 .info{ background-color: #fafafa; box-shadow: 0 1px 1px #888; }
 #pose-info{ margin: 0 0 0 5px; }
-#action-buttons{ margin: 0 0 10px 10px; }
+#action-buttons{ margin: 0 0 10px 5px; }
 .instructions{ padding: 10px; }
 a{ color: inherit; }
 #saved-poses object{ width: 10px; height: 10px; }
@@ -35,6 +35,7 @@ a{ color: inherit; }
 .remove-entry{ position: absolute; right: 5px; top: 5px;}
 .remove-entry:hover{ opacity: .5; }
 #bottom-panel{ position: absolute; left: 0; right: 0; bottom: 0; }
+#action-buttons span{ line-height: 2em; }
 </style>
 </head>
 <body>
@@ -89,10 +90,11 @@ a{ color: inherit; }
 			<p><span class="var-name" >Position</span> <span id="position-x" >0</span> <span id="position-y" >0</span> <span id="position-z" >0</span><br/><span class="var-name" >Orientation</span> <span id="orientation-x" >0</span> <span id="orientation-y" >0</span> <span id="orientation-z" >0</span> <span id="orientation-w" >0</span></p>
 		</div>
 		<div id="action-buttons" class="subsection" >
-			<button id="translate-button" class="active"><object type="image/svg+xml" data="assets/translate.svg"></object>Translate</button>
+			<span>Transformation</span><button id="translate-button" class="active"><object type="image/svg+xml" data="assets/translate.svg"></object>Translate</button>
 			<button id="rotate-button"><object type="image/svg+xml" data="assets/rotate.svg"></object>Rotate</button>
-			<button id="local-button" class="active"><object type="image/svg+xml" data="assets/local.svg"></object>Local</button>
+			<span>in</span><button id="local-button" class="active"><object type="image/svg+xml" data="assets/local.svg"></object>Local</button>
 			<button id="world-button"><object type="image/svg+xml" data="assets/world.svg"></object>World</button>
+			<span>space</span>
 		</div>
 	</div>
 

@@ -4,17 +4,21 @@ For "Chrome DevTools extension to emulate WebVR API"
 https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
+
+## [1.1.0] - 2016-09-13
 ### Added
 - Options for persistence on reload by @spite
 - Options for sharing pose across tabs by @spite
 - Store and restore poses by @spite
 - Added link to repo and changelog by @spite
+- Action buttons on the bottom bar by @spite
 
 ### Changed
 - Switched message passing to CustomEvent dispatching by @spite
 - Revamped UI and styles by @spite
 
 ### Fixed
+- TransformControls with OrthographicCamera by @mrdoob
 - Emulated HMDs had externalDisplay disabled by @spite
 - Ctrl key release by @spite
 

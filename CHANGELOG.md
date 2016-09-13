@@ -16,6 +16,7 @@ https://github.com/spite/WebVR-Extension
 ### Changed
 - Switched message passing to CustomEvent dispatching by @spite
 - Revamped UI and styles by @spite
+- Snapping translation units from 1m to 10cm by @spite
 
 ### Fixed
 - TransformControls with OrthographicCamera by @mrdoob

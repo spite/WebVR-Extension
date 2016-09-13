@@ -175,6 +175,13 @@ window.addEventListener( 'keydown', function ( event ) {
 
 		case 81: // Q
 		control.setSpace( control.space === "local" ? "world" : "local" );
+		if( control.space === "local" ) {
+			ge( 'local-button' ).classList.add( 'active' );
+			ge( 'world-button' ).classList.remove( 'active' );
+		} else {
+			ge( 'local-button' ).classList.remove( 'active' );
+			ge( 'world-button' ).classList.add( 'active' );
+		}
 		break;
 
 		case 17: // Ctrl
@@ -184,15 +191,15 @@ window.addEventListener( 'keydown', function ( event ) {
 
 		case 87: // W
 		control.setMode( "translate" );
+		ge( 'translate-button' ).classList.add( 'active' );
+		ge( 'rotate-button' ).classList.remove( 'active' );
 		break;
 
 		case 69: // E
 		control.setMode( "rotate" );
+		ge( 'translate-button' ).classList.remove( 'active' );
+		ge( 'rotate-button' ).classList.add( 'active' );
 		break;
-
-		/*case 82: // R
-		control.setMode( "scale" );
-		break;*/
 
 		case 187:
 		case 107: // +, =, num+
@@ -207,6 +214,58 @@ window.addEventListener( 'keydown', function ( event ) {
 	}
 
 });
+
+ge( 'translate-button' ).addEventListener( 'click', e => {
+
+	ge( 'translate-button' ).classList.toggle( 'active' );
+	if( ge( 'translate-button' ).classList.contains( 'active' ) ){
+		control.setMode( "translate" );
+		ge( 'rotate-button' ).classList.remove( 'active' );
+	} else {
+		control.setMode( "rotate" );
+		ge( 'rotate-button' ).classList.add( 'active' );
+	}
+
+} );
+
+ge( 'rotate-button' ).addEventListener( 'click', e => {
+
+	ge( 'rotate-button' ).classList.toggle( 'active' );
+	if( ge( 'rotate-button' ).classList.contains( 'active' ) ){
+		control.setMode( "rotate" );
+		ge( 'translate-button' ).classList.remove( 'active' );
+	} else {
+		control.setMode( "translate" );
+		ge( 'translate-button' ).classList.add( 'active' );
+	}
+
+} );
+
+ge( 'local-button' ).addEventListener( 'click', e => {
+
+	ge( 'local-button' ).classList.toggle( 'active' );
+	if( ge( 'local-button' ).classList.contains( 'active' ) ){
+		control.setSpace( 'local' );
+		ge( 'world-button' ).classList.remove( 'active' );
+	} else {
+		control.setSpace( 'world' );
+		ge( 'world-button' ).classList.add( 'active' );
+	}
+
+} );
+
+ge( 'world-button' ).addEventListener( 'click', e => {
+
+	ge( 'world-button' ).classList.toggle( 'active' );
+	if( ge( 'world-button' ).classList.contains( 'active' ) ){
+		control.setSpace( 'world' );
+		ge( 'local-button' ).classList.remove( 'active' );
+	} else {
+		control.setSpace( 'local' );
+		ge( 'local-button' ).classList.add( 'active' );
+	}
+
+} );
 
 window.addEventListener( 'keyup', function ( event ) {
 

@@ -2,6 +2,8 @@
 Chrome DevTools extension that enables users and developers to run WebVR 1.0 content without having a supported HMD headset or even a compatible browser/platform.
 It currently emulates an HTC Vive.
 
+![Snapshot 1](/about/capture.jpg)
+
 It can also help develop even if one owns an HMD, by making repetitive actions that require putting the HMD on and off easier to check through the DevTools panel.
 
 [Here's a video showing it in action](https://www.youtube.com/watch?v=oegZrA9tr08)

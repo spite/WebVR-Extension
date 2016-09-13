@@ -394,5 +394,14 @@ window.addEventListener( 'click', e => {
 
 } );
 
+var links = document.querySelectorAll( 'a[rel=external]' );
+for( var j = 0; j < links.length; j++ ) {
+	var a = links[ j ];
+	a.addEventListener( 'click', function( e ) {
+		window.open( this.href, '_blank' );
+		e.preventDefault();
+	}, false );
+}
+
 onWindowResize();
 render();

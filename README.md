@@ -4,11 +4,11 @@ It currently emulates an HTC Vive.
 
 <a href="https://chrome.google.com/webstore/detail/webvr-api-emulation/gbdnpaebafagioggnhkacnaaahpiefil"><img src="https://raw.githubusercontent.com/spite/WebVR-Extension/master/about/ChromeWebStore_Badge_v2_496x150.png" width="248px"/></a>
 
-![Snapshot 1](/about/capture.jpg)
-
 It can also help develop even if one owns an HMD, by making repetitive actions that require putting the HMD on and off easier to check through the DevTools panel.
 
-[Here's a video showing it in action](https://www.youtube.com/watch?v=oegZrA9tr08)
+![Snapshot 1](/about/capture.jpg)
+
+[Here's a video showing it in action](https://www.youtube.com/watch?v=D8dj0bk3cWQ)
 
 ![Snapshot 1](/about/snapshot1.jpg)
 ![Snapshot 2](/about/snapshot2.jpg)

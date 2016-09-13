@@ -185,7 +185,7 @@ window.addEventListener( 'keydown', function ( event ) {
 		break;
 
 		case 17: // Ctrl
-		control.setTranslationSnap( 1 );
+		control.setTranslationSnap( .1 );
 		control.setRotationSnap( THREE.Math.degToRad( 15 ) );
 		break;
 

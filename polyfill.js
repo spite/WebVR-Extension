@@ -149,6 +149,16 @@ var source = '(' + function () {
 
 	}
 
+	function createVRDisplayEvent( type, display, reason ) {
+
+		var event = new CustomEvent( type );
+		event.display = display;
+		event.reason = reason;
+
+		return event;
+
+	}
+
 	function VRDisplay( model ) {
 
 		this.depthFar = 1000;
@@ -206,14 +216,10 @@ var source = '(' + function () {
 		window.addEventListener( 'webvr-hmd-activate', function( e ) {
 
 			if( e.detail.state ){
-				var event = new CustomEvent( 'vrdisplayactivate' );
-				event.display = this;
-				event.reason = 'HMD activated';
+				var event = createVRDisplayEvent( 'vrdisplayactivate', this, 'HMD activated' );
 				window.dispatchEvent(event);
 			} else {
-				var event = new CustomEvent( 'vrdisplaydeactivate' );
-				event.display = this;
-				event.reason = 'HMD deactivated';
+				var event = createVRDisplayEvent( 'vrdisplaydeactivate', this, 'HMD deactivated' );
 				window.dispatchEvent(event);
 			}
 
@@ -254,9 +260,7 @@ var source = '(' + function () {
 
 			this.isPresenting = true;
 
-			var event = new CustomEvent( 'vrdisplaypresentchange' );
-			event.display = this;
-			event.reason = 'Presenting requested';
+			var event = createVRDisplayEvent( 'vrdisplaypresentchange', this, 'Presenting requested' );
 			window.dispatchEvent(event);
 
 			resolve();
@@ -271,9 +275,7 @@ var source = '(' + function () {
 
 			this.isPresenting = false;
 
-			var event = new CustomEvent( 'vrdisplaypresentchange' );
-			event.display = this;
-			event.reason = 'Presenting exited';
+			var event = createVRDisplayEvent( 'vrdisplaypresentchange', this, 'Presenting exited' );
 			window.dispatchEvent(event);
 
 			resolve();
@@ -287,7 +289,7 @@ var source = '(' + function () {
 
 	VRDisplay.prototype.resetPose = function() {
 
-		var event = new VRDisplayEvent( 'webvr-resetpose' );
+		var event = new Event( 'webvr-resetpose' );
 		window.dispatchEvent( event );
 
 	}

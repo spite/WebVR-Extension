@@ -388,6 +388,13 @@ ge( 'disclaimer' ).addEventListener( 'click', e => {
 	ge( 'disclaimer-content' ).classList.toggle( 'collapsed' );
 })
 
+ge( 'activate-hmd-btn' ).addEventListener( 'click', e => {
+
+	ge( 'activate-hmd-btn' ).classList.toggle( 'active' );
+	post( { action: 'hmd-activate', value: ge( 'activate-hmd-btn' ).classList.contains( 'active' ) } );
+
+} );
+
 window.addEventListener( 'click', e => {
 
 	ge( 'saved-poses' ).classList.add( 'collapsed' );

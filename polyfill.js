@@ -38,6 +38,14 @@ port.onMessage.addListener( function( msg ) {
 		} );
 		window.dispatchEvent( e );
 		break;
+		case 'hmd-activate':
+		var e = new CustomEvent( 'webvr-hmd-activate', {
+			detail: {
+				state: msg.value
+			}
+		} );
+		window.dispatchEvent( e );
+		break;
 	}
 
 } );
@@ -194,6 +202,23 @@ var source = '(' + function () {
 			this.pose.orientation[ 3 ] = e.detail.rotation.w;
 
 		}.bind( this ) );
+
+		window.addEventListener( 'webvr-hmd-activate', function( e ) {
+
+			if( e.detail.state ){
+				var event = new CustomEvent( 'vrdisplayactivate' );
+				event.display = this;
+				event.reason = 'HMD activated';
+				window.dispatchEvent(event);
+			} else {
+				var event = new CustomEvent( 'vrdisplaydeactivate' );
+				event.display = this;
+				event.reason = 'HMD deactivated';
+				window.dispatchEvent(event);
+			}
+
+		}.bind( this ) );
+
 	}
 
 	VRDisplay.prototype.requestAnimationFrame = function( c ) {

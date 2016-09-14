@@ -141,6 +141,9 @@ chrome.runtime.onConnect.addListener( function( port ) {
 				};
 				notifyPose( tabId );
 				break;
+				case 'hmd-activate':
+				connections[ tabId ].contentScript.postMessage( { action: 'hmd-activate', value: msg.value } );
+				break;
 			}
 		}
 

@@ -229,7 +229,9 @@ var source = '(' + function () {
 
 			this.isPresenting = true;
 
-			var event = new Event( 'vrdisplaypresentchange' );
+			var event = new CustomEvent( 'vrdisplaypresentchange' );
+			event.display = this;
+			event.reason = 'Presenting requested';
 			window.dispatchEvent(event);
 
 			resolve();
@@ -244,7 +246,9 @@ var source = '(' + function () {
 
 			this.isPresenting = false;
 
-			var event = new Event( 'vrdisplaypresentchange' );
+			var event = new CustomEvent( 'vrdisplaypresentchange' );
+			event.display = this;
+			event.reason = 'Presenting exited';
 			window.dispatchEvent(event);
 
 			resolve();
@@ -258,7 +262,7 @@ var source = '(' + function () {
 
 	VRDisplay.prototype.resetPose = function() {
 
-		var event = new Event( 'webvr-resetpose' );
+		var event = new VRDisplayEvent( 'webvr-resetpose' );
 		window.dispatchEvent( event );
 
 	}

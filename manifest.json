@@ -15,7 +15,7 @@
 	],
 	"content_scripts": [{
 		"matches": ["<all_urls>"],
-		"js": [ "polyfill.js", "content-script.js" ],
+		"js": [ "content-common.js", "webvr-1.1-utils.js", "polyfill.js", "content-script.js" ],
 		"run_at": "document_start",
 		"all_frames": true
 	} ],

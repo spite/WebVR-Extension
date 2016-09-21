@@ -31,7 +31,7 @@ function injectedScript() {
 
 	// WebVR 1.0
 
-	function VRDisplayCapabilities () {
+	function EmuVRDisplayCapabilities () {
 
 		this.canPresent = true;
 		this.hasExternalDisplay = true;
@@ -41,7 +41,7 @@ function injectedScript() {
 
 	}
 
-	function VRStageParameters() {
+	function EmuVRStageParameters() {
 
 		this.sittingToStandingTransform = new Float32Array( [
 			1, 0, 0, 0,
@@ -55,7 +55,7 @@ function injectedScript() {
 
 	}
 
-	function VRPose() {
+	function EmuVRPose() {
 
 		this.timestamp = startDate + ( performance.now() - startPerfNow );
 		this.position = new Float32Array( [ 0, 0, 0 ] );
@@ -67,7 +67,7 @@ function injectedScript() {
 
 	}
 
-	function VRFieldOfView() {
+	function EmuVRFieldOfView() {
 
 		this.upDegrees = 0;
 		this.downDegrees = 0;
@@ -76,10 +76,10 @@ function injectedScript() {
 
 	}
 
-	function VREyeParameters() {
+	function EmuVREyeParameters() {
 
 		this.offset = new Float32Array( [ 0, 0, 0 ] );
-		this.fieldOfView = new VRFieldOfView();
+		this.fieldOfView = new EmuVRFieldOfView();
 		this.renderWidth = 0;
 		this.renderHeight = 0;
 
@@ -95,7 +95,7 @@ function injectedScript() {
 
 	}
 
-	function VRDisplay( model ) {
+	function EmuVRDisplay( model ) {
 
 		this.depthFar = 1000;
 		this.depthNear = .1;
@@ -104,17 +104,17 @@ function injectedScript() {
 		this.isConnected = true;
 		this.isPresenting = false;
 
-		this.stageParameters = new VRStageParameters();
+		this.stageParameters = new EmuVRStageParameters();
 
-		this.capabilities = new VRDisplayCapabilities();
+		this.capabilities = new EmuVRDisplayCapabilities();
 		this.capabilities.canPresent = model.features.canPresent;
 		this.capabilities.hasExternalDisplay = model.features.hasExternalDisplay;
 		this.capabilities.hasOrientation = model.features.hasOrientation;
 		this.capabilities.hasPosition = model.features.hasPosition;
 
-		this.pose = new VRPose();
+		this.pose = new EmuVRPose();
 
-		this.leftEyeParameters = new VREyeParameters();
+		this.leftEyeParameters = new EmuVREyeParameters();
 		this.leftEyeParameters.fieldOfView.upDegrees = model.leftEye.up;
 		this.leftEyeParameters.fieldOfView.downDegrees = model.leftEye.down;
 		this.leftEyeParameters.fieldOfView.leftDegrees = model.leftEye.left;
@@ -123,7 +123,7 @@ function injectedScript() {
 		this.leftEyeParameters.renderHeight = model.resolution.height;
 		this.leftEyeParameters.offset[ 0 ] = model.leftEye.offset;
 
-		this.rightEyeParameters = new VREyeParameters();
+		this.rightEyeParameters = new EmuVREyeParameters();
 		this.rightEyeParameters.fieldOfView.upDegrees = model.rightEye.up;
 		this.rightEyeParameters.fieldOfView.downDegrees = model.rightEye.down;
 		this.rightEyeParameters.fieldOfView.leftDegrees = model.rightEye.left;
@@ -163,26 +163,26 @@ function injectedScript() {
 
 	}
 
-	VRDisplay.prototype.requestAnimationFrame = function( c ) {
+	EmuVRDisplay.prototype.requestAnimationFrame = function( c ) {
 
 		return requestAnimationFrame( c );
 
 	}
 
-	VRDisplay.prototype.cancelAnimationFrame = function(handle) {
+	EmuVRDisplay.prototype.cancelAnimationFrame = function(handle) {
 
 		cancelAnimationFrame(handle);
 
 	}
 
-	VRDisplay.prototype.getEyeParameters = function( id ) {
+	EmuVRDisplay.prototype.getEyeParameters = function( id ) {
 
 		if( id === 'left' ) return this.leftEyeParameters;
 		return this.rightEyeParameters;
 
 	}
 
-	VRDisplay.prototype.getPose = function() {
+	EmuVRDisplay.prototype.getPose = function() {
 
 		this.pose.timestamp = startDate + ( performance.now() - startPerfNow );
 
@@ -190,7 +190,7 @@ function injectedScript() {
 
 	}
 
-	VRDisplay.prototype.requestPresent = function() {
+	EmuVRDisplay.prototype.requestPresent = function() {
 
 		return new Promise( function( resolve, reject ) {
 
@@ -205,7 +205,7 @@ function injectedScript() {
 
 	}
 
-	VRDisplay.prototype.exitPresent = function() {
+	EmuVRDisplay.prototype.exitPresent = function() {
 
 		return new Promise( function( resolve, reject ) {
 
@@ -220,36 +220,34 @@ function injectedScript() {
 
 	}
 
-	VRDisplay.prototype.submitFrame = function( pose ) {
+	EmuVRDisplay.prototype.submitFrame = function( pose ) {
 	}
 
-	VRDisplay.prototype.resetPose = function() {
+	EmuVRDisplay.prototype.resetPose = function() {
 
 		var event = new Event( 'webvr-resetpose' );
 		window.dispatchEvent( event );
 
 	}
 
-	window.VRDisplay = VRDisplay;
+	EmuVRDisplay.prototype.getFrameData = function( frameData ) {
 
-	( function() {
+		return frameDataFromPose( frameData, this.getPose(), this );
 
-		var vrD = new VRDisplay( ViveData )
+	}
 
-		navigator.getVRDisplays = function() {
+	function EmuVRFrameData() {
+		this.leftProjectionMatrix = new Float32Array(16);
+		this.leftViewMatrix = new Float32Array(16);
+		this.rightProjectionMatrix = new Float32Array(16);
+		this.rightViewMatrix = new Float32Array(16);
+		this.pose = null;
+	};
 
-			return new Promise( function( resolve, reject ) {
-
-				resolve( [ vrD ] );
-
-			} );
-
-		}
-
-	} )();
-
+	window.VRFrameData = EmuVRFrameData;
+	
 	// LEGACY
-
+/*
 	function HMDVRDevice( model ) {
 
 		this.deviceName = model.name;
@@ -408,6 +406,52 @@ function injectedScript() {
 		}
 
 	} )();
+
+	var event = new Event( 'webvr-ready' );
+	window.dispatchEvent( event );*/
+
+	if( window.VRDisplayCapabilities === undefined ) {
+
+		window.VRDisplayCapabilities = EmuVRDisplayCapabilities;
+
+	}
+
+	if( window.VRDisplay === undefined ) {
+	
+		window.VRDisplay = EmuVRDisplay;
+
+	}
+
+	var vrD = new EmuVRDisplay( ViveData )
+
+	var _getVRDisplays = navigator.getVRDisplays;
+
+	if( navigator.getVRDisplays === undefined ) {
+
+		navigator.getVRDisplays = function() {
+
+			return new Promise( function( resolve, reject ) {
+
+				resolve( [ vrD ] );
+
+			} );
+
+		}
+
+	} else {
+
+		navigator.getVRDisplays = function() {
+
+			return new Promise( ( resolve, reject ) => {
+
+				console.log( 'getVRDisplays' );
+				_getVRDisplays.apply( this, arguments ).then( res => { res.unshift( vrD ); resolve( res ); } ).catch( e => reject( e ) );
+
+			} );
+
+		}
+
+	}
 
 	var event = new Event( 'webvr-ready' );
 	window.dispatchEvent( event );

@@ -4,8 +4,11 @@ For "Chrome DevTools extension to emulate WebVR API"
 https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
+
+## [1.1.1] - 2016-09-25
 ### Added
 - Activate/deactivate HMD feature by @spite
+- VRDisplay.getLayers
 
 ### Fixed
 - vrdisplay and reason in VRDisplayEvent by @spite

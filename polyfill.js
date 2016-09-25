@@ -230,6 +230,12 @@ function injectedScript() {
 
 	}
 
+	VRDisplay.prototype.getLayers = function() {
+
+		return [];
+
+	}
+
 	window.VRDisplay = VRDisplay;
 
 	( function() {

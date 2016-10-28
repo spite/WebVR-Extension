@@ -5,6 +5,10 @@ https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
 
+## [1.1.2] - 2016-10-28
+### Added
+- Support for VRDisplay.getLayers() by @AVGP
+
 ## [1.1.1] - 2016-09-25
 ### Added
 - Activate/deactivate HMD feature by @spite

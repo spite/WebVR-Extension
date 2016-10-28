@@ -28,6 +28,7 @@ function injectedScript() {
 
 	var startDate = Date.now();
 	var startPerfNow = performance.now();
+	var currentLayers = [];
 
 	// WebVR 1.0
 
@@ -190,11 +191,13 @@ function injectedScript() {
 
 	}
 
-	VRDisplay.prototype.requestPresent = function() {
+	VRDisplay.prototype.requestPresent = function(layers) {
 
 		return new Promise( function( resolve, reject ) {
 
 			this.isPresenting = true;
+			
+			currentLayers = layers;
 
 			var event = createVRDisplayEvent( 'vrdisplaypresentchange', this, 'Presenting requested' );
 			window.dispatchEvent(event);
@@ -210,6 +213,8 @@ function injectedScript() {
 		return new Promise( function( resolve, reject ) {
 
 			this.isPresenting = false;
+			
+			currentLayers = [];
 
 			var event = createVRDisplayEvent( 'vrdisplaypresentchange', this, 'Presenting exited' );
 			window.dispatchEvent(event);
@@ -232,7 +237,7 @@ function injectedScript() {
 
 	VRDisplay.prototype.getLayers = function() {
 
-		return [];
+		return currentLayers;
 
 	}
 

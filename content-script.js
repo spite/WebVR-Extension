@@ -24,7 +24,7 @@ function post( msg ) {
 
 }
 
-post( { method: 'script-ready' } );
+post( { action: 'script-ready' } );
 
 port.onMessage.addListener( function( msg ) {
 

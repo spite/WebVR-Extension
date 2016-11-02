@@ -85,6 +85,14 @@ function injectedScript() {
 
 	}
 
+	function VRLayer() {
+
+		this.leftBounds = null;
+		this.rightBounds = null;
+		this.source = null;
+
+	}
+
 	function createVRDisplayEvent( type, display, reason ) {
 
 		var event = new CustomEvent( type );
@@ -103,7 +111,8 @@ function injectedScript() {
 		this.displayName = model.name;
 		this.isConnected = true;
 		this.isPresenting = false;
-		this.__currentLayers = [];
+
+		this.layers = [];
 
 		this.stageParameters = new VRStageParameters();
 
@@ -196,8 +205,15 @@ function injectedScript() {
 		return new Promise( function( resolve, reject ) {
 
 			this.isPresenting = true;
-			
-			this.__currentLayers = layers;
+
+			this.layers = [];
+			layers.forEach( function( l ) {
+				var layer = new VRLayer();
+				layer.source = l.source;
+				if( l.leftBounds ) layer.leftBounds = l.leftBounds;
+				if( l.rightBounds ) layer.rightBounds = l.rightBounds;
+				this.layers.push( layer );
+			}.bind(this));
 
 			var event = createVRDisplayEvent( 'vrdisplaypresentchange', this, 'Presenting requested' );
 			window.dispatchEvent(event);
@@ -213,8 +229,8 @@ function injectedScript() {
 		return new Promise( function( resolve, reject ) {
 
 			this.isPresenting = false;
-			
-			this.__currentLayers = [];
+
+			this.layers = [];
 
 			var event = createVRDisplayEvent( 'vrdisplaypresentchange', this, 'Presenting exited' );
 			window.dispatchEvent(event);
@@ -237,7 +253,7 @@ function injectedScript() {
 
 	VRDisplay.prototype.getLayers = function() {
 
-		return currentLayers;
+		return this.layers;
 
 	}
 

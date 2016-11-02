@@ -5,6 +5,10 @@ https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
 
+## [1.1.3] - 2016-11-2
+### Fixed
+- VRLayers handling by @spite
+
 ## [1.1.2] - 2016-10-28
 ### Added
 - Support for VRDisplay.getLayers() by @AVGP

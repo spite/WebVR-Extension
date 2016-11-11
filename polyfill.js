@@ -467,7 +467,15 @@ function injectedScript() {
 
 	}
 
-	window.VRDisplay = VRDisplay;
+	function assignToWindow() {
+
+		window.VRDisplay = VRDisplay;
+		window.VRFrameData = VRFrameData;
+		window.VRPose = VRPose;
+
+	}
+
+	assignToWindow();
 
 	( function() {
 
@@ -626,10 +634,6 @@ function injectedScript() {
 
 	window.HMDVRDevice = HMDVRDevice;
 	window.PositionSensorVRDevice = PositionSensorVRDevice;
-
-	window.VRDisplay = VRDisplay;
-	window.VRFrameData = VRFrameData;
-	window.VRPose = VRPose;
 
 	( function() {
 

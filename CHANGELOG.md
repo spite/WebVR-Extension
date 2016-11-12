@@ -5,6 +5,10 @@ https://github.com/spite/WebVR-Extension
 
 ## [Unreleased]
 
+## [1.1.4] - 2016-11-11
+### Added
+- Support for VRFrameData and VRDisplay.getFrameData by @spite (see https://github.com/spite/WebVR-Extension/issues/21)
+
 ## [1.1.3] - 2016-11-2
 ### Fixed
 - VRLayers handling by @spite

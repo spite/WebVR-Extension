@@ -26,23 +26,30 @@ function post( msg ) {
 
 post( { action: 'script-ready' } );
 
+var cloneInto = cloneInto || null;
+
+function createCustomEvent(type, detail) {
+	// Use cloneInto on Firefox (which prevents the security
+	// sandbox from raising exception when the javascript
+	// code in the webpage content is going to access to the
+	// event properties).
+	detail = cloneInto ? cloneInto(detail, window) : detail;
+	return new CustomEvent( type, { detail });
+}
+
 port.onMessage.addListener( function( msg ) {
 
 	switch( msg.action ) {
 		case 'pose':
-		var e = new CustomEvent( 'webvr-pose', {
-			detail: {
-				position: msg.position,
-				rotation: msg.rotation
-			}
+		var e = createCustomEvent( 'webvr-pose', {
+			position: msg.position,
+			rotation: msg.rotation
 		} );
 		window.dispatchEvent( e );
 		break;
 		case 'hmd-activate':
-		var e = new CustomEvent( 'webvr-hmd-activate', {
-			detail: {
-				state: msg.value
-			}
+		var e = createCustomEvent( 'webvr-hmd-activate', {
+			state: msg.value
 		} );
 		window.dispatchEvent( e );
 		break;

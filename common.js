@@ -32,7 +32,7 @@ function loadSettings() {
 
 	return new Promise( ( resolve, reject ) => {
 
-		chrome.storage.sync.get( 'settings', obj => {
+		chrome.storage.local.get( 'settings', obj => {
 			resolve( fixSettings( obj.settings ) );
 		} );
 
@@ -44,7 +44,7 @@ function saveSettings( settings ) {
 
 	return new Promise( ( resolve, reject ) => {
 
-		chrome.storage.sync.set( { 'settings': settings }, obj => {
+		chrome.storage.local.set( { 'settings': settings }, obj => {
 			resolve( obj );
 		} );
 

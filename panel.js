@@ -89,8 +89,21 @@ room.position.y = 1;
 room.renderOrder = -1;
 scene.add( room );
 
-var hmd = new THREE.Mesh( new THREE.BoxGeometry( 0.20, 0.11, 0.12 ), new THREE.MeshNormalMaterial() );
+var loader = new THREE.OBJLoader();
+var hmd = new THREE.Object3D();
 scene.add( hmd );
+
+loader.load( 'assets/headset.obj', function( obj ) {
+
+	var model = obj.children[ 0 ];
+	model.rotation.y = Math.PI;
+	model.scale.set( .5, .5, .5 );
+	model.geometry.center();
+	model.material = new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load( 'assets/headset-ao.png' ), side: THREE.DoubleSide } );
+	model.material.map.minFilter = THREE.LinearFilter;
+	hmd.add( model );
+
+} );
 
 var invalidated = true;
 function invalidate() {

@@ -408,6 +408,18 @@ ge( 'activate-hmd-btn' ).addEventListener( 'click', e => {
 
 } );
 
+ge( 'track-hmd-btn' ).addEventListener( 'click', e => {
+
+	post( { action: 'hmd-tracking', value: 'hmd' } );
+
+} );
+
+ge( 'track-extension-btn' ).addEventListener( 'click', e => {
+
+	post( { action: 'hmd-tracking', value: 'emu' } );
+
+} );
+
 window.addEventListener( 'click', e => {
 
 	ge( 'saved-poses' ).classList.add( 'collapsed' );

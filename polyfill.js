@@ -478,10 +478,13 @@ function injectedScript() {
 		var originalVRFrameData = window.VRFrameData;
 		var originalGetFrameData = VRDisplay.prototype.getFrameData;
 		VRDisplay.prototype.getFrameData = function( frameData ) {
-			var fD = new originalVRFrameData();
-			originalGetFrameData.apply( this, [ fD ] );
-			for( var j in frameData ) frameData[ j ] = fD[ j ];
-//			vrD.getFrameData( frameData );
+			if( trackingSource === 'hmd' ) {
+				var fD = new originalVRFrameData();
+				originalGetFrameData.apply( this, [ fD ] );
+				for( var j in frameData ) frameData[ j ] = fD[ j ];
+			} else {
+				vrD.getFrameData( frameData );
+			}
 		}
 
 		window.VRFrameData = EmulatedVRFrameData;
@@ -670,6 +673,14 @@ function injectedScript() {
 		}
 
 	} )();
+
+	var trackingSource = 'hmd';
+
+	window.addEventListener( 'webvr-hmd-tracking', function( e ) {
+
+		trackingSource = e.detail.source;
+
+	} );
 
 	var event = new Event( 'webvr-ready' );
 	window.dispatchEvent( event );

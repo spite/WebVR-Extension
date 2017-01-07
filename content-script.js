@@ -53,6 +53,12 @@ port.onMessage.addListener( function( msg ) {
 		} );
 		window.dispatchEvent( e );
 		break;
+		case 'hmd-tracking':
+		var e = createCustomEvent( 'webvr-hmd-tracking', {
+			source: msg.value
+		} );
+		window.dispatchEvent( e );
+		break;
 	}
 
 } );

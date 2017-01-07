@@ -410,12 +410,16 @@ ge( 'activate-hmd-btn' ).addEventListener( 'click', e => {
 
 ge( 'track-hmd-btn' ).addEventListener( 'click', e => {
 
+	ge( 'track-hmd-btn' ).classList.add( 'active' );
+	ge( 'track-extension-btn' ).classList.remove( 'active' );
 	post( { action: 'hmd-tracking', value: 'hmd' } );
 
 } );
 
 ge( 'track-extension-btn' ).addEventListener( 'click', e => {
 
+	ge( 'track-hmd-btn' ).classList.remove( 'active' );
+	ge( 'track-extension-btn' ).classList.add( 'active' );
 	post( { action: 'hmd-tracking', value: 'emu' } );
 
 } );

@@ -281,6 +281,10 @@ function injectedScript() {
 			if (!frameData || !pose)
 				return false;
 
+			if( !( frameData instanceof EmulatedVRFrameData ) ) {
+				frameData = new EmulatedVRFrameData();
+			}
+
 			frameData.pose = pose;
 			frameData.timestamp = pose.timestamp;
 
@@ -467,45 +471,46 @@ function injectedScript() {
 
 	}
 
-	function assignToWindow() {
+	var vrD = new EmulatedVRDisplay( ViveData )
 
-		window.VRDisplay = EmulatedVRDisplay;
+	if( 'getVRDisplays' in navigator ) {
+
+		var originalVRFrameData = window.VRFrameData;
+		var originalGetFrameData = VRDisplay.prototype.getFrameData;
+		VRDisplay.prototype.getFrameData = function( frameData ) {
+			var fD = new originalVRFrameData();
+			originalGetFrameData.apply( this, [ fD ] );
+			for( var j in frameData ) frameData[ j ] = fD[ j ];
+//			vrD.getFrameData( frameData );
+		}
+
 		window.VRFrameData = EmulatedVRFrameData;
-		window.VRPose = EmulatedVRPose;
 
-	}
+		var originalGetVRDisplays = navigator.getVRDisplays;
 
-	assignToWindow();
+		navigator.getVRDisplays = function() {
 
-	( function() {
-
-		var vrD = new EmulatedVRDisplay( ViveData )
-
-		if( 'getVRDisplays' in navigator ) {
-
-			var originalGetVRDisplays = navigator.getVRDisplays;
-
-			navigator.getVRDisplays = function() {
-
-				return originalGetVRDisplays();
-
-			}
-
-		} else {
-
-			navigator.getVRDisplays = function() {
-
-				return new Promise( function( resolve, reject ) {
-
-					resolve( [ vrD ] );
-
-				} );
-
-			}
+			return originalGetVRDisplays.apply( navigator ).then( res => { res.push( vrD ); return res; } );
 
 		}
 
-	} )();
+	} else {
+
+		window.VRFrameData = EmulatedVRFrameData;
+		window.VRDisplay = EmulatedVRDisplay;
+		window.VRPose = EmulatedVRPose;
+
+		navigator.getVRDisplays = function() {
+
+			return new Promise( function( resolve, reject ) {
+
+				resolve( [ vrD ] );
+
+			} );
+
+		}
+
+	}
 
 	// LEGACY
 

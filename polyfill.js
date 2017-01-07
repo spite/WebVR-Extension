@@ -418,7 +418,7 @@ function injectedScript() {
 
 			this.layers = [];
 			layers.forEach( function( l ) {
-				var layer = new VRLayer();
+				var layer = new EmulatedVRLayer();
 				layer.source = l.source;
 				if( l.leftBounds ) layer.leftBounds = l.leftBounds;
 				if( l.rightBounds ) layer.rightBounds = l.rightBounds;

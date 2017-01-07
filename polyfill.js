@@ -481,13 +481,27 @@ function injectedScript() {
 
 		var vrD = new EmulatedVRDisplay( ViveData )
 
-		navigator.getVRDisplays = function() {
+		if( 'getVRDisplays' in navigator ) {
 
-			return new Promise( function( resolve, reject ) {
+			var originalGetVRDisplays = navigator.getVRDisplays;
 
-				resolve( [ vrD ] );
+			navigator.getVRDisplays = function() {
 
-			} );
+				return originalGetVRDisplays();
+
+			}
+
+		} else {
+
+			navigator.getVRDisplays = function() {
+
+				return new Promise( function( resolve, reject ) {
+
+					resolve( [ vrD ] );
+
+				} );
+
+			}
 
 		}
 

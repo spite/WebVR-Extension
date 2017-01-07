@@ -31,7 +31,7 @@ function injectedScript() {
 
 	// WebVR 1.0
 
-	function VRDisplayCapabilities () {
+	function EmulatedVRDisplayCapabilities () {
 
 		this.canPresent = true;
 		this.hasExternalDisplay = true;
@@ -41,7 +41,7 @@ function injectedScript() {
 
 	}
 
-	function VRStageParameters() {
+	function EmulatedVRStageParameters() {
 
 		this.sittingToStandingTransform = new Float32Array( [
 			1, 0, 0, 0,
@@ -55,7 +55,7 @@ function injectedScript() {
 
 	}
 
-	function VRPose() {
+	function EmulatedVRPose() {
 
 		this.timestamp = startDate + ( performance.now() - startPerfNow );
 		this.position = new Float32Array( [ 0, 0, 0 ] );
@@ -67,7 +67,7 @@ function injectedScript() {
 
 	}
 
-	function VRFieldOfView() {
+	function EmulatedVRFieldOfView() {
 
 		this.upDegrees = 0;
 		this.downDegrees = 0;
@@ -76,16 +76,16 @@ function injectedScript() {
 
 	}
 
-	function VREyeParameters() {
+	function EmulatedVREyeParameters() {
 
 		this.offset = new Float32Array( [ 0, 0, 0 ] );
-		this.fieldOfView = new VRFieldOfView();
+		this.fieldOfView = new EmulatedVRFieldOfView();
 		this.renderWidth = 0;
 		this.renderHeight = 0;
 
 	}
 
-	function VRLayer() {
+	function EmulatedVRLayer() {
 
 		this.leftBounds = null;
 		this.rightBounds = null;
@@ -93,7 +93,7 @@ function injectedScript() {
 
 	}
 
-	function VRFrameData() {
+	function EmulatedVRFrameData() {
 
 		this.leftProjectionMatrix = new Float32Array( 16 );
 		this.leftViewMatrix = new Float32Array( 16 );
@@ -307,7 +307,7 @@ function injectedScript() {
 
 	}
 
-	function VRDisplay( model ) {
+	function EmulatedVRDisplay( model ) {
 
 		this.depthFar = 1000;
 		this.depthNear = .1;
@@ -318,17 +318,17 @@ function injectedScript() {
 
 		this.layers = [];
 
-		this.stageParameters = new VRStageParameters();
+		this.stageParameters = new EmulatedVRStageParameters();
 
-		this.capabilities = new VRDisplayCapabilities();
+		this.capabilities = new EmulatedVRDisplayCapabilities();
 		this.capabilities.canPresent = model.features.canPresent;
 		this.capabilities.hasExternalDisplay = model.features.hasExternalDisplay;
 		this.capabilities.hasOrientation = model.features.hasOrientation;
 		this.capabilities.hasPosition = model.features.hasPosition;
 
-		this.pose = new VRPose();
+		this.pose = new EmulatedVRPose();
 
-		this.leftEyeParameters = new VREyeParameters();
+		this.leftEyeParameters = new EmulatedVREyeParameters();
 		this.leftEyeParameters.fieldOfView.upDegrees = model.leftEye.up;
 		this.leftEyeParameters.fieldOfView.downDegrees = model.leftEye.down;
 		this.leftEyeParameters.fieldOfView.leftDegrees = model.leftEye.left;
@@ -337,7 +337,7 @@ function injectedScript() {
 		this.leftEyeParameters.renderHeight = model.resolution.height;
 		this.leftEyeParameters.offset[ 0 ] = model.leftEye.offset;
 
-		this.rightEyeParameters = new VREyeParameters();
+		this.rightEyeParameters = new EmulatedVREyeParameters();
 		this.rightEyeParameters.fieldOfView.upDegrees = model.rightEye.up;
 		this.rightEyeParameters.fieldOfView.downDegrees = model.rightEye.down;
 		this.rightEyeParameters.fieldOfView.leftDegrees = model.rightEye.left;
@@ -377,26 +377,26 @@ function injectedScript() {
 
 	}
 
-	VRDisplay.prototype.requestAnimationFrame = function( c ) {
+	EmulatedVRDisplay.prototype.requestAnimationFrame = function( c ) {
 
 		return requestAnimationFrame( c );
 
 	}
 
-	VRDisplay.prototype.cancelAnimationFrame = function(handle) {
+	EmulatedVRDisplay.prototype.cancelAnimationFrame = function(handle) {
 
 		cancelAnimationFrame(handle);
 
 	}
 
-	VRDisplay.prototype.getEyeParameters = function( id ) {
+	EmulatedVRDisplay.prototype.getEyeParameters = function( id ) {
 
 		if( id === 'left' ) return this.leftEyeParameters;
 		return this.rightEyeParameters;
 
 	}
 
-	VRDisplay.prototype.getPose = function() {
+	EmulatedVRDisplay.prototype.getPose = function() {
 
 		this.pose.timestamp = startDate + ( performance.now() - startPerfNow );
 
@@ -404,13 +404,13 @@ function injectedScript() {
 
 	}
 
-	VRDisplay.prototype.getFrameData = function( frameData ){
+	EmulatedVRDisplay.prototype.getFrameData = function( frameData ){
 
 		return frameDataFromPose( frameData, this.getPose(), this );
 
 	}
 
-	VRDisplay.prototype.requestPresent = function(layers) {
+	EmulatedVRDisplay.prototype.requestPresent = function(layers) {
 
 		return new Promise( function( resolve, reject ) {
 
@@ -434,7 +434,7 @@ function injectedScript() {
 
 	}
 
-	VRDisplay.prototype.exitPresent = function() {
+	EmulatedVRDisplay.prototype.exitPresent = function() {
 
 		return new Promise( function( resolve, reject ) {
 
@@ -451,17 +451,17 @@ function injectedScript() {
 
 	}
 
-	VRDisplay.prototype.submitFrame = function( pose ) {
+	EmulatedVRDisplay.prototype.submitFrame = function( pose ) {
 	}
 
-	VRDisplay.prototype.resetPose = function() {
+	EmulatedVRDisplay.prototype.resetPose = function() {
 
 		var event = new Event( 'webvr-resetpose' );
 		window.dispatchEvent( event );
 
 	}
 
-	VRDisplay.prototype.getLayers = function() {
+	EmulatedVRDisplay.prototype.getLayers = function() {
 
 		return this.layers;
 
@@ -469,9 +469,9 @@ function injectedScript() {
 
 	function assignToWindow() {
 
-		window.VRDisplay = VRDisplay;
-		window.VRFrameData = VRFrameData;
-		window.VRPose = VRPose;
+		window.VRDisplay = EmulatedVRDisplay;
+		window.VRFrameData = EmulatedVRFrameData;
+		window.VRPose = EmulatedVRPose;
 
 	}
 
@@ -479,7 +479,7 @@ function injectedScript() {
 
 	( function() {
 
-		var vrD = new VRDisplay( ViveData )
+		var vrD = new EmulatedVRDisplay( ViveData )
 
 		navigator.getVRDisplays = function() {
 

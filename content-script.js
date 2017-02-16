@@ -69,7 +69,7 @@ window.addEventListener( 'webvr-resetpose', function() {
 
 } );
 
-var source = '(' + injectedScript + ')();';
+var source = 'setTimeout(' + injectedScript + ', 0);';
 
 var script = document.createElement('script');
 script.textContent = source;
